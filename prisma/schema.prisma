@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  name String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  clerkId String @unique
+  paymentDone Boolean @default(false)
+  exams UserExam[]
+}
+
+model Exam {
+  id String @id @default(uuid())
+  title String
+  description String?
+  timeLimit Int
+  questions ExamQuestion[]
+  userExams UserExam[]
+}
+
+model ExamQuestion {
+  id String @id @default(uuid())
+  examId String
+  questionText String
+  choices Questionchoice[]
+  correctAnswer String
+
+  exam Exam @relation(fields: [examId], references: [id])
+  
+
+  UserChoice UserChoice[]
+}
+
+model Questionchoice {
+  id String @id @default(uuid())
+  questionId String
+  identifier String
+  choiceAnswer String
+
+ question ExamQuestion @relation(fields: [questionId], references: [id])
+}
+
+model UserChoice {
+  id String @id @default(uuid())
+  questionId String
+  isCorrect Boolean @default(false)
+  userchoice String
+  userExamId String
+  userExam UserExam @relation(fields: [userExamId], references: [id])
+  question ExamQuestion @relation(fields: [questionId], references: [id])
+
+}
+
+model UserExam {
+  id String @id @default(uuid())
+  userId String
+  examId String
+  totalQuestions Int
+  examTitle String?
+  dateSubmitted DateTime
+  answers UserChoice[]
+  Score Int?
+
+  user User @relation(fields: [userId], references: [id])
+  exam Exam @relation(fields: [examId], references: [id])
+
+  @@unique([userId, examId])
+}
