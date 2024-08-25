@@ -1,6 +1,9 @@
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 
 export default function Home() {
+  const { userId } = auth()
+  var href = userId ? "/profile" : "/sign-up"
   return (
     <div className="w-screen h-screen bg-black flex justify-center items-center text-white">
       <div className="w-full max-w-[600px] mx-auto">
@@ -13,7 +16,7 @@ export default function Home() {
           2-hour MCQ exam . Practice, track your progress, and excel in your
           preparation with our real-world exam experience.
         </p>
-        <Link href="/signup">
+        <Link href={href}>
           <button
             className="rounded-lg px-4 py-2 bg-blue-700 text-xl hover:bg-blue-800 active:bg-blue-800
          focus:outline-none focus:ring-blue-400"
