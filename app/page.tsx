@@ -5,7 +5,7 @@ export default function Home() {
   const { userId } = auth()
   var href = userId ? "/profile" : "/sign-up"
   return (
-    <div className="w-screen h-screen bg-black flex justify-center items-center text-white">
+    <div className="w-screen h-screen bg-primary-color flex justify-center items-center text-white">
       <div className="w-full max-w-[600px] mx-auto">
         <h1 className="text-6xl mb-5 text-nowrap font-mono">
           Test Your Knowledge
@@ -18,7 +18,7 @@ export default function Home() {
         </p>
         <Link href={href}>
           <button
-            className="rounded-lg px-4 py-2 bg-blue-700 text-xl hover:bg-blue-800 active:bg-blue-800
+            className="rounded-lg px-4 py-2 bg-button-color text-xl hover:bg-button-color active:bg-blue-800
          focus:outline-none focus:ring-blue-400"
           >
             Get Started
