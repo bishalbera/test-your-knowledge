@@ -36,10 +36,11 @@ const ProfilePage = async () => {
     select: {
       Score: true,
       exams: true,
+      imageUrl: true,
     },
   });
   return (
-    <div className=" bg-primary-color text-white h-screen w-screen">
+    <div className=" bg-primary-color text-white min-h-screen w-screen">
       <nav>
         <ul className="flex flex-row   justify-between  p-4">
           <li className="my-4">
@@ -59,6 +60,13 @@ const ProfilePage = async () => {
           </li>
         </ul>
       </nav>
+      <div className="mb-8 flex justify-center items-center h-[100px]">
+        <img
+          src={userData?.imageUrl ?? ""}
+          alt="Profile"
+          className="w-16 h-16 rounded-full object-cover"
+        />
+      </div>
       <ProfileBody userData={userData} />
     </div>
   );
