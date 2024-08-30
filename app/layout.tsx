@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import Header from "@/components/Header/Header";
-import Footer from "@/components/Footer/Footer";
 
-const inter = Inter({ subsets: ["latin"] });
-
+const poppins = Poppins({
+  weight: ["400", "500", "700", "900"],
+  style: ["italic", "normal"],
+  subsets: ["latin"],
+  variable: "--font-poppins",
+});
 export const metadata: Metadata = {
   title: "TYK",
   description: "Give exam to test you knowledge",
@@ -20,10 +22,8 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${inter.className} overscroll-none`}>
-          <Header />
+        <body className={`${poppins.className} overscroll-none antialiased`}>
           {children}
-          <Footer />
         </body>
       </html>
     </ClerkProvider>
