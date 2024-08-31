@@ -22,6 +22,7 @@ const Footer = () => {
           </small>
         </p>
       </div>
+      <p className="text-center mt-4 font-mono">-- Made with 🖤 by Bishal --</p>
     </footer>
   );
 };

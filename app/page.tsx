@@ -1,3 +1,4 @@
+import FeatureCard from "@/components/FeatureCard/FeatureCard";
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
 import { auth } from "@clerk/nextjs/server";
@@ -12,10 +13,10 @@ export default function Home() {
       <Header />
       <div className=" flex flex-grow justify-center items-center">
         <div className="w-full mx-auto max-w-[600px]">
-          <h1 className="text-6xl my-5 text-nowrap font-mono">
+          <h1 className="text-5xl my-5 text-nowrap font-mono">
             Test Your Knowledge
           </h1>
-          <p className=" text-2xl mb-6 text-white/60 p-1">
+          <p className=" text-xl mb-6 text-white/60 p-1">
             Welcome to TYK, an online platform for those who want to brush up
             their knowledge. Sign up, choose your preferred time slot, and take
             a 2-hour MCQ exam. Practice, track your progress, and excel in your
@@ -28,6 +29,8 @@ export default function Home() {
           </Link>
         </div>
       </div>
+      <h2 className="pl-8 font-bold font-mono text-lg">Features</h2>
+      <FeatureCard/>
       <Footer />
     </div>
   );
