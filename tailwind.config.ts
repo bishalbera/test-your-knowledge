@@ -15,6 +15,24 @@ const config: Config = {
         "text-color": "#EBD3F8",
       },
     },
+    keyframes: {
+      "fade-out-down": {
+        from: {
+          opacity: "1",
+          transform: "translateY(0)",
+        },
+        to: {
+          opacity: "0",
+          transform: "translateY(40%)",
+        },
+      },
+    },
+    animation: {
+      "fade-out-down": "fade-out-down  linear forwards",
+    },
+    supports: {
+      "no-scroll-driven-animations": "not(animation-timeline: scroll())",
+    },
   },
   plugins: [],
 };
