@@ -1,29 +1,31 @@
 "use client";
 
-import { useRef } from "react";
+import { ChangeEvent, useRef } from "react";
 import { FaPlus } from "react-icons/fa6";
 
 const FileUpload = () => {
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleOnClick = () => {
-    fileInputRef?.current?.click();
+    fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (event) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     const formData = new FormData();
-    formData.append("file", files[0]);
+    if (files && files.length > 0) {
+      formData.append("file", files[0]);
 
-    const response = await fetch("/api/upload-exam", {
-      method: "POST",
-      body: formData,
-    });
+      const response = await fetch("/api/upload-exam", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (response.ok) {
-      console.log("File uploaded successfully");
-    } else {
-      console.log("File upload failed");
+      if (response.ok) {
+        console.log("File uploaded successfully");
+      } else {
+        console.log("File upload failed");
+      }
     }
   };
 
