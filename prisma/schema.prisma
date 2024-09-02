@@ -30,6 +30,7 @@ model Exam {
   id String @id @default(uuid())
   title String
   description String?
+  cost Int @default(1000)
   timeLimit Int
   questions ExamQuestion[]
   userExams UserExam[]
