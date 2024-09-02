@@ -4,9 +4,10 @@ import { v4 as uuidv4 } from "uuid";
 interface Exam {
   id: string;
   title: string;
-  description?: string;
+  description?: string | null;
+  cost: number;
   timeLimit: number;
-  questions: ExamQuestion[];
+  questions?: ExamQuestion[];
 }
 
 interface ExamQuestion {
@@ -23,6 +24,28 @@ interface QuestionChoice {
   identifier: string;
   choiceAnswer: string;
 }
+export const getExamQuestions = async (): Promise<ExamQuestion[] | null> => {
+  try {
+    const questions = await prisma.examQuestion.findMany({
+      include: {
+        choices: true,
+      },
+    });
+    return questions;
+  } catch (error) {
+    console.log("Failed to get questions", error);
+    return null;
+  }
+};
+export const getExams = async (): Promise<Exam[] | null> => {
+  try {
+    const exams = await prisma.exam.findMany();
+    return exams;
+  } catch (error) {
+    console.log("Failed to get exams", error);
+    return null;
+  }
+};
 
 export const uploadExam = async (exam: Exam) => {
   try {
@@ -31,9 +54,10 @@ export const uploadExam = async (exam: Exam) => {
         id: exam.id,
         title: exam.title,
         description: exam.description,
+        cost: exam.cost,
         timeLimit: exam.timeLimit,
         questions: {
-          create: exam.questions.map((question) => {
+          create: exam.questions?.map((question) => {
             const questionId = uuidv4();
             return {
               id: questionId,
