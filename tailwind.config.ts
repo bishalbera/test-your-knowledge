@@ -13,6 +13,9 @@ const config: Config = {
         "button-color": "#AD49E1",
         "button-hover-color": "#7A1CAC",
         "text-color": "#EBD3F8",
+        "custom-dark": "hsl(220, 18%, 3%)", 
+        "cus-white": "hsl(0,0%,100%)",
+        "white-transparent": "hsla(0,0%,100%,0.06)",
       },
     },
     keyframes: {

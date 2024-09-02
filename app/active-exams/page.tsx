@@ -34,7 +34,7 @@ const ActiveExams = () => {
   return (
     <div className="min-h-screen w-full bg-primary-color">
       <h1 className="font-mono text-text-color text-3xl p-4">Active Exams</h1>
-      <div className=" w-full grid grid-cols-4 gap-4 p-4">
+      <div className=" w-full grid grid-cols-4  gap-4 p-4">
         {exams.map((exam) => (
           <ExamCard
             key={exam.id}

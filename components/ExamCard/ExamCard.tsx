@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 import { Exam } from "@prisma/client";
@@ -10,14 +10,14 @@ interface ExamCardProps {
 
 const ExamCard: React.FC<ExamCardProps> = ({ exam, onButtonClick }) => {
   return (
-    <div className="p-4 bg-white rounded shadow-md">
-      <h2 className="text-xl font-bold">{exam.title}</h2>
-      <p>{exam.description}</p>
-      <p>Cost: ${exam.cost}</p>
-      <p>Time Limit: {exam.timeLimit} minutes</p>
+    <div className="p-4 bg-custom-dark rounded-[1.6rem] border border-white-transparent shadow-sm grid grid-rows-subgrid row-span-6">
+      <h2 className="text-xl font-mono text-cus-white">{exam.title}</h2>
+      <p className="text-cus-white font-mono">{exam.timeLimit} minutes</p>
+      <p className="text-cus-white text-5xl font-[700] font-mono"> Rs {exam.cost}</p>
+      <p className="text-cus-white font-mono">{exam.description}</p>
       <button
         onClick={() => onButtonClick(exam.id)}
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+        className=" bg-cus-white text-black px-4 py-2 rounded font-mono"
       >
         Take Exam
       </button>

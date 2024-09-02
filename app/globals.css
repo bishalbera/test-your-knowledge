@@ -37,3 +37,14 @@
     animation-timeline: --reveal-wrapper;
     animation-range: entry 100% cover 80%;
 }
+
+.card-wrapper {
+    padding: 2.4rem 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0,1fr));
+    gap: 1.2rem 0;
+}
+
+.exam-card {
+    
+}
