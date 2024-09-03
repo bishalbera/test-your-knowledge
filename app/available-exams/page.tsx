@@ -10,7 +10,7 @@ const ActiveExams = () => {
   const { data: exams, error } = useSWR<Exam[]>(
     "/api/available-exams",
     fetcher,
-    { refreshInterval: 10000 }
+    { refreshInterval: 3600000 }
   );
   const router = useRouter();
 
