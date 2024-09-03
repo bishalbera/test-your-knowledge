@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+.calendar-custom {
+  @apply bg-cus-white text-black  rounded p-4;
+}
+/* 
+.calendar-custom .react-calendar__tile {
+  @apply text-black bg-cus-white rounded hover:bg-blue-500 hover:text-white;
+}
+
+.calendar-custom .react-calendar__tile--now {
+  @apply bg-blue-400 text-white;
+}
+
+.calendar-custom .react-calendar__tile--active {
+  @apply bg-orange-500 text-white font-bold;
+}
+
+
+.calendar-custom .react-calendar__navigation button:disabled {
+  @apply text-gray-400;
+}
+
+.calendar-custom .react-calendar__month-view__weekdays {
+  @apply text-gray-300;
+} */
+.calendar-custom .react-calendar__navigation button {
+  @apply text-white bg-custom-dark hover:bg-blue-500;
+}
+
 @keyframes text-reveal {
   to {
     --split-position: 100%;
