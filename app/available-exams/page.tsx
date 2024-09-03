@@ -28,7 +28,7 @@ const ActiveExams = () => {
             key={exam.id}
             exam={exam}
             onButtonClick={(id) =>
-              router.push(`/available-exams/${id}/instruction`)
+              router.push(`/available-exams/${id}/schedule-exam`)
             }
           />
         ))}
