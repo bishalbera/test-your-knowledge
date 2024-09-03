@@ -40,6 +40,7 @@ model ExamQuestion {
   id String @id @default(uuid())
   examId String
   questionText String
+  imageUrl String?
   choices Questionchoice[]
   correctAnswer String
 
