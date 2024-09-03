@@ -3,48 +3,43 @@
 @tailwind utilities;
 
 @keyframes text-reveal {
-    to {
-        --split-position: 100%;
-    }
+  to {
+    --split-position: 100%;
+  }
 }
 
 @property --split-position {
-    syntax: "<percentage>";
-    inherits: false;
-    initial-value: 0%;
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 0%;
 }
 
 .scroll-wrapper {
-    min-height: 300vh;
- /* Some extra room to scroll the text out of view again. */
-    margin-bottom: 100vh;
-    view-timeline-name: --reveal-wrapper;
-    padding: 24px;
+  min-height: 300vh;
+  /* Some extra room to scroll the text out of view again. */
+  margin-bottom: 100vh;
+  view-timeline-name: --reveal-wrapper;
+  padding: 24px;
 }
 
 .fancy-text {
-    --split-position: 0%;
-    animation: text-reveal 1s ease-in-out;
-    background-image: linear-gradient(to right, #fff, #fff var(--split-position), #012030 var(--split-position), #012030);
-    background-clip: text;
-    color: transparent;
-    display: inline;
-    position: sticky;
-    top: 250px;
-    font-size: 25px;
+  --split-position: 0%;
+  animation: text-reveal 1s ease-in-out;
+  background-image: linear-gradient(
+    to right,
+    #fff,
+    #fff var(--split-position),
+    #012030 var(--split-position),
+    #012030
+  );
+  background-clip: text;
+  color: transparent;
+  display: inline;
+  position: sticky;
+  top: 250px;
+  font-size: 25px;
 
-    animation: text-reveal linear both;
-    animation-timeline: --reveal-wrapper;
-    animation-range: entry 100% cover 80%;
-}
-
-.card-wrapper {
-    padding: 2.4rem 0;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0,1fr));
-    gap: 1.2rem 0;
-}
-
-.exam-card {
-    
+  animation: text-reveal linear both;
+  animation-timeline: --reveal-wrapper;
+  animation-range: entry 100% cover 80%;
 }

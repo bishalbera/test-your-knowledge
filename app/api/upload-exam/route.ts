@@ -15,7 +15,10 @@ export const POST = async (req: NextRequest) => {
         { status: 201 }
       );
     } else {
-      return Response.json({error: "No file uploaded or invalid file"},{status: 400})
+      return Response.json(
+        { error: "No file uploaded or invalid file" },
+        { status: 400 }
+      );
     }
   } catch (error) {
     console.log("Error", error);

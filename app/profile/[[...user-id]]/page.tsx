@@ -4,8 +4,7 @@ import { prisma, addUserToDb } from "@/utils/db";
 import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
-import Link from "next/link"
-
+import Link from "next/link";
 
 const ProfilePage = async () => {
   await addUserToDb();
@@ -30,7 +29,7 @@ const ProfilePage = async () => {
             <Link href="/">Home</Link>
           </li>
           <li className="font-serif">
-            <Link href="/active-exams">Exams</Link>
+            <Link href="/available-exams">Exams</Link>
           </li>
           <li className="font-serif">
             <Link href="/profile">Profile</Link>
@@ -51,7 +50,7 @@ const ProfilePage = async () => {
       </div>
       <p className="flex justify-center text-lg font-bold">{userData?.name}</p>
       <ProfileBody userData={userData} />
-      {isAdmin && <FileUpload/>}
+      {isAdmin && <FileUpload />}
     </div>
   );
 };
