@@ -47,6 +47,20 @@ export const getExams = async (): Promise<Exam[] | null> => {
   }
 };
 
+export const getExam = async (id: string): Promise<Exam | null> => {
+  try {
+    const exam = await prisma.exam.findUniqueOrThrow({
+      where: {
+        id: id,
+      },
+    });
+    return exam;
+  } catch (error) {
+    console.log(`Failed to get exam with id ${id}:`, error);
+    return null;
+  }
+};
+
 export const uploadExam = async (exam: Exam) => {
   try {
     const examRes = await prisma.exam.create({

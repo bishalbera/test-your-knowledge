@@ -1,5 +1,6 @@
 import { getUserFromClerkID } from "@/utils/auth";
 import { prisma } from "@/utils/db";
+import { getExam, getExams } from "@/utils/examUtils";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (
@@ -19,19 +20,18 @@ export const POST = async (
         { status: 400 }
       );
     }
-
     const { id } = params;
-    console.log("Exam ID:", id);
+    const res = await getExam(id);
 
     const updatedUserExam = await prisma.userExam.create({
       data: {
         userId: user.id,
         examId: id,
+        examTitle: res?.title,
         scheduledDateTime: scheduledDateTime,
         dateSubmitted: new Date(),
       },
     });
-
 
     return NextResponse.json(updatedUserExam);
   } catch (error) {
