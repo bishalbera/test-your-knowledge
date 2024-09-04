@@ -74,8 +74,10 @@ model UserExam {
   id String @id @default(uuid())
   userId String
   examId String
-  totalQuestions Int
+  totalQuestions Int?
   examTitle String?
+  scheduledDateTime DateTime
+  paid Boolean @default(false)
   dateSubmitted DateTime
   answers UserChoice[]
 

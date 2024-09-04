@@ -1,19 +1,43 @@
 "use client";
 
 import CustomDateTimePicker from "@/components/CustomDateTimePicker/CustomDateTmePicker";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const ScheduleExam = () => {
+const ScheduleExam = ({ params }: { params: { id: string } }) => {
+  const { id } = params;
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(2);
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(
     new Date()
   );
 
-  const nextStep = () => {
-    if (currentStep < 3) setCurrentStep(currentStep + 1);
+  const nextStep = async () => {
+    if (currentStep < 3) {
+      try {
+        const res = await fetch(`/api/available-exams/${id}/schedule-exam`, {
+          method: "POST",
+          body: JSON.stringify({
+            id,
+            scheduledDateTime: selectedDateTime,
+          }),
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          setCurrentStep(currentStep + 1);
+          // router.push("")
+        } else {
+          console.log("Failed to schedule exam:", result.message);
+        }
+      } catch (error) {
+        console.log("An error occurred", error);
+      }
+    }
   };
   const previousStep = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
+    if (currentStep === 2) router.back();
   };
 
   return (
