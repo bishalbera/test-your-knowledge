@@ -1,43 +1,52 @@
 "use client";
 
 import CustomDateTimePicker from "@/components/CustomDateTimePicker/CustomDateTmePicker";
+import Spinner from "@/components/Spinner/Spinner";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const ScheduleExam = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(2);
-  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(
-    new Date()
-  );
-  const [examDetails, setExamDetails] = useState<{
-    title: string;
-    image: string;
-    cost: string;
-  } | null>(null);
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
 
-  useEffect(() => {
-    const fetchExamDetails = async () => {
-      try {
-        const res = await fetch(`/api/available-exams/${id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setExamDetails({
-            title: data.title,
-            image: data.image,
-            cost: data.cost,
-          });
-        } else {
-          console.log("Failed to fetch exam details:", res.statusText);
-        }
-      } catch (error) {
-        console.log("An error occurred while fetching exam details", error);
-      }
-    };
+  const fetchExamDetails = async (id: string) => {
+    const res = await fetch(`/api/available-exams/${id}`);
+    if (!res.ok) throw new Error("Failed to fetch exam details");
+    return res.json();
+  };
+  const {
+    data: examDetails,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["examDetails", id],
+    queryFn: () => fetchExamDetails(id),
+  });
+  // TODO; store selectedDateTime in localStorage
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const savedDateTime = localStorage.getItem(`selectedDateTime-${id}`);
+  //     if (savedDateTime) {
+  //       console.log(savedDateTime);
+  //       setSelectedDateTime(new Date(savedDateTime));
+  //     } else {
+  //       setSelectedDateTime(new Date());
+  //     }
+  //   }
+  // }, [id]);
 
-    fetchExamDetails();
-  }, [id]);
+  // useEffect(() => {
+  //   if (selectedDateTime && typeof window !== "undefined") {
+  //     localStorage.setItem(
+  //       `selectedDateTime-${id}`,
+  //       selectedDateTime.toISOString()
+  //     );
+  //   }
+  // }, [selectedDateTime, id]);
+
   const nextStep = async () => {
     if (currentStep < 3) {
       try {
@@ -59,7 +68,7 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
 
         if (result.status === 201) {
           setCurrentStep(currentStep + 1);
-         
+
           // router.push("")
         } else {
           console.error(
@@ -76,6 +85,14 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
     if (currentStep === 2) router.back();
   };
+
+  if (isLoading) {
+    return <Spinner />;
+  }
+
+  if (isError) {
+    return <div>Failed to load exam. Please try again later.</div>;
+  }
 
   return (
     <div className="min-h-screen w-full bg-primary-color text-white flex flex-col justify-center p-4 items-center">
@@ -128,12 +145,30 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
             <CustomDateTimePicker onDateTimeChange={setSelectedDateTime} />
           </div>
         )}
+        {currentStep === 3 && (
+          <div className="my-4 text-center">
+            <h2 className="font-bold mb-4 text-xl">{examDetails?.title}</h2>
+            <img
+              src={examDetails?.imageUrl || "/default-image.jpg"}
+              width={40}
+              height={40}
+              className="w-40 h-40 mx-auto mb-4"
+              alt="exam-image"
+            />
+            <p className="text-lg mb-4 font-[700]">
+              Cost: INR {examDetails?.cost}
+            </p>
+            <button className="p-2 bg-green-500 hover:bg-green-600 text-cus-white rounded-lg font-medium">
+              Proceed to Payment
+            </button>
+          </div>
+        )}
         <div className="mt-auto flex justify-between">
           <button
             onClick={previousStep}
             className={`p-2 bg-cus-white text-black rounded-lg ${
               currentStep === 1 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            } ${currentStep === 3 ? "hover:bg-cus-white/70" : ""}`}
             disabled={currentStep === 1}
           >
             Previous

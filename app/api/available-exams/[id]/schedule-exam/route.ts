@@ -28,6 +28,7 @@ export const POST = async (
         userId: user.id,
         examId: id,
         examTitle: res?.title,
+        imageUrl: res?.imageUrl,
         scheduledDateTime: scheduledDateTime,
         dateSubmitted: new Date(),
       },

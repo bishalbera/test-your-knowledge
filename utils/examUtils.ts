@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 interface Exam {
   id: string;
   title: string;
+  imageUrl?: string | null;
   description?: string | null;
   cost: number;
   timeLimit: number;
@@ -67,6 +68,7 @@ export const uploadExam = async (exam: Exam) => {
       data: {
         id: exam.id,
         title: exam.title,
+        imageUrl: exam.imageUrl,
         description: exam.description,
         cost: exam.cost,
         timeLimit: exam.timeLimit,
