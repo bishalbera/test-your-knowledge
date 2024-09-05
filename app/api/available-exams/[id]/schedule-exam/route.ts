@@ -1,6 +1,6 @@
 import { getUserFromClerkID } from "@/utils/auth";
 import { prisma } from "@/utils/db";
-import { getExam, getExams } from "@/utils/examUtils";
+import { getExam } from "@/utils/examUtils";
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (
@@ -33,7 +33,11 @@ export const POST = async (
       },
     });
 
-    return NextResponse.json(updatedUserExam);
+    return NextResponse.json({
+      message: "Exam scheduled successfully",
+      data: updatedUserExam,
+      status: 201,
+    });
   } catch (error) {
     console.error("Error scheduling exam:", error);
     return NextResponse.json(

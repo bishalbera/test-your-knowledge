@@ -22,7 +22,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${poppins.className} overscroll-none antialiased`}>{children}</body>
+        <body className={`${poppins.className} overscroll-none antialiased`}>
+          {children}
+        </body>
       </html>
     </ClerkProvider>
   );

@@ -2,7 +2,7 @@
 
 import CustomDateTimePicker from "@/components/CustomDateTimePicker/CustomDateTmePicker";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ScheduleExam = ({ params }: { params: { id: string } }) => {
   const { id } = params;
@@ -11,7 +11,33 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(
     new Date()
   );
+  const [examDetails, setExamDetails] = useState<{
+    title: string;
+    image: string;
+    cost: string;
+  } | null>(null);
 
+  useEffect(() => {
+    const fetchExamDetails = async () => {
+      try {
+        const res = await fetch(`/api/available-exams/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setExamDetails({
+            title: data.title,
+            image: data.image,
+            cost: data.cost,
+          });
+        } else {
+          console.log("Failed to fetch exam details:", res.statusText);
+        }
+      } catch (error) {
+        console.log("An error occurred while fetching exam details", error);
+      }
+    };
+
+    fetchExamDetails();
+  }, [id]);
   const nextStep = async () => {
     if (currentStep < 3) {
       try {
@@ -23,15 +49,26 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
           }),
         });
 
+        if (!res.ok) {
+          console.error("Failed to schedule exam:", res.status, res.statusText);
+          const errDetails = await res.json();
+          throw new Error(errDetails?.message || "unknown error occurred");
+        }
+
         const result = await res.json();
-        if (result.success) {
+
+        if (result.status === 201) {
           setCurrentStep(currentStep + 1);
+         
           // router.push("")
         } else {
-          console.log("Failed to schedule exam:", result.message);
+          console.error(
+            "Failed to schedule exammmmmm:",
+            result?.message || "unknown response format"
+          );
         }
       } catch (error) {
-        console.log("An error occurred", error);
+        console.error("An unexpected error occurred:", error.message || error);
       }
     }
   };
@@ -108,7 +145,7 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
                 : ""
             }`}
             onClick={nextStep}
-            disabled={currentStep === 3 || !selectedDateTime}
+            disabled={!selectedDateTime}
           >
             Next
           </button>

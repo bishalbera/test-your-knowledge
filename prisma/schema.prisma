@@ -29,6 +29,7 @@ model User {
 model Exam {
   id String @id @default(uuid())
   title String
+  imageUrl String?
   description String?
   cost Int @default(1000)
   timeLimit Int
@@ -76,6 +77,7 @@ model UserExam {
   examId String
   totalQuestions Int?
   examTitle String?
+  imageUrl String?
   scheduledDateTime DateTime
   paid Boolean @default(false)
   dateSubmitted DateTime
