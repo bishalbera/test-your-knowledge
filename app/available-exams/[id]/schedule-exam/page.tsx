@@ -55,21 +55,26 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
 
   const handlePayClick = async () => {
     const stripe = await getStripe();
-    const userId = await fetch("/api/get-user", { method: "GET" });
-
+    const userRes = await fetch("/api/get-user", { method: "GET" });
+    const userId = await userRes.json()
     try {
       const response = await fetch("/api/stripe", {
         method: "POST",
-        body: JSON.stringify({ userId, examTitle, imageUrl, cost }),
+        body: JSON.stringify({ examTitle, cost, imageUrl, userId }),
       });
-      const stripeSession = await response.json();
+      if (!response.ok) {
+        throw new Error("Failed to create Stripe session");
+      }
+
+      const stripeSession = await response.json(); 
+
       if (stripe) {
         const result = await stripe.redirectToCheckout({
           sessionId: stripeSession.id,
         });
 
         if (result.error) {
-          console.log("payment failed");
+          console.log("Payment failed:", result.error.message);
         }
       }
     } catch (error) {

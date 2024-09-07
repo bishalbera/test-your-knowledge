@@ -35,6 +35,9 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
     const examTitle = exam?.title;
     const examCost = exam?.cost;
+
+    console.log(userExam?.imageUrl);
+
     const stripeSession: Stripe.Checkout.Session =
       await stripe.checkout.sessions.create({
         line_items: [
@@ -44,7 +47,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
               currency: "INR",
               product_data: {
                 name: examTitle,
-                images: userExam?.imageUrl,
+                images: [userExam?.imageUrl],
               },
               unit_amount: examCost! * 100,
             },
