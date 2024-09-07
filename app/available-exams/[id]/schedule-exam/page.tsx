@@ -2,6 +2,7 @@
 
 import CustomDateTimePicker from "@/components/CustomDateTimePicker/CustomDateTmePicker";
 import Spinner from "@/components/Spinner/Spinner";
+import { getStripe } from "@/utils/stripe";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -46,6 +47,35 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
   //     );
   //   }
   // }, [selectedDateTime, id]);
+  //
+
+  const examTitle = examDetails?.title;
+  const imageUrl = examDetails?.imageUrl;
+  const cost = examDetails?.cost;
+
+  const handlePayClick = async () => {
+    const stripe = await getStripe();
+    const userId = await fetch("/api/get-user", { method: "GET" });
+
+    try {
+      const response = await fetch("/api/stripe", {
+        method: "POST",
+        body: JSON.stringify({ userId, examTitle, imageUrl, cost }),
+      });
+      const stripeSession = await response.json();
+      if (stripe) {
+        const result = await stripe.redirectToCheckout({
+          sessionId: stripeSession.id,
+        });
+
+        if (result.error) {
+          console.log("payment failed");
+        }
+      }
+    } catch (error) {
+      console.error("An error occured", error);
+    }
+  };
 
   const nextStep = async () => {
     if (currentStep < 3) {
@@ -101,39 +131,34 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
         <div className="flex justify-between items-center mb-8">
           <div className="flex-1 text-center">
             <div
-              className={`w-8 h-8 ${
-                currentStep >= 1 ? "bg-green-500" : "bg-gray-500"
-              } text-white rounded-full flex items-center justify-center mx-auto`}
+              className={`w-8 h-8 ${currentStep >= 1 ? "bg-green-500" : "bg-gray-500"
+                } text-white rounded-full flex items-center justify-center mx-auto`}
             >
               1
             </div>
             <p className="text-sm mt-2">Exam Detail</p>
           </div>
           <div
-            className={`flex-1 h-1 ${
-              currentStep >= 2 ? "bg-green-500" : "bg-gray-500"
-            }`}
+            className={`flex-1 h-1 ${currentStep >= 2 ? "bg-green-500" : "bg-gray-500"
+              }`}
           ></div>
           <div className="flex-1 text-center">
             <div
-              className={`w-8 h-8 rounded-full text-white ${
-                currentStep >= 2 ? "bg-green-500" : "bg-gray-500"
-              } flex justify-center items-center mx-auto`}
+              className={`w-8 h-8 rounded-full text-white ${currentStep >= 2 ? "bg-green-500" : "bg-gray-500"
+                } flex justify-center items-center mx-auto`}
             >
               2
             </div>
             <p className="text-sm mt-2 ">Time & Date</p>
           </div>
           <div
-            className={`flex-1 h-1 ${
-              currentStep >= 3 ? "bg-green-500" : "bg-gray-500"
-            }`}
+            className={`flex-1 h-1 ${currentStep >= 3 ? "bg-green-500" : "bg-gray-500"
+              }`}
           ></div>
           <div className="flex-1 text-center">
             <div
-              className={`w-8 h-8 ${
-                currentStep >= 3 ? "bg-green-500" : "bg-gray-500"
-              } text-white rounded-full flex items-center justify-center mx-auto`}
+              className={`w-8 h-8 ${currentStep >= 3 ? "bg-green-500" : "bg-gray-500"
+                } text-white rounded-full flex items-center justify-center mx-auto`}
             >
               3
             </div>
@@ -158,7 +183,10 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
             <p className="text-lg mb-4 font-[700]">
               Cost: INR {examDetails?.cost}
             </p>
-            <button className="p-2 bg-green-500 hover:bg-green-600 text-cus-white rounded-lg font-medium">
+            <button
+              className="p-2 bg-green-500 hover:bg-green-600 text-cus-white rounded-lg font-medium"
+              onClick={handlePayClick}
+            >
               Proceed to Payment
             </button>
           </div>
@@ -166,19 +194,17 @@ const ScheduleExam = ({ params }: { params: { id: string } }) => {
         <div className="mt-auto flex justify-between">
           <button
             onClick={previousStep}
-            className={`p-2 bg-cus-white text-black rounded-lg ${
-              currentStep === 1 ? "opacity-50 cursor-not-allowed" : ""
-            } ${currentStep === 3 ? "hover:bg-cus-white/70" : ""}`}
+            className={`p-2 bg-cus-white text-black rounded-lg ${currentStep === 1 ? "opacity-50 cursor-not-allowed" : ""
+              } ${currentStep === 3 ? "hover:bg-cus-white/70" : ""}`}
             disabled={currentStep === 1}
           >
             Previous
           </button>
           <button
-            className={`p-2 bg-cus-white text-black rounded-lg ${
-              currentStep === 3 || !selectedDateTime
+            className={`p-2 bg-cus-white text-black rounded-lg ${currentStep === 3 || !selectedDateTime
                 ? "opacity-50 cursor-not-allowed"
                 : ""
-            }`}
+              }`}
             onClick={nextStep}
             disabled={!selectedDateTime}
           >
