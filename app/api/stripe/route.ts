@@ -57,6 +57,12 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
         success_url: `${origin}/profile`,
         cancel_url: `${origin}/cancel`,
         payment_method_types: ["card"],
+        metadata: {
+
+          user: user.id,
+          examCost,
+          examId,
+        },
       });
 
     return NextResponse.json(stripeSession, {
