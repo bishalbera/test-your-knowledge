@@ -6,8 +6,12 @@ import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
-const ProfilePage = async () => {
+const ProfilePage = async ({params}: {params:{id: string}}) => {
   await addUserToDb();
+
+  const { id } = params
+ 
+  
 
   const cUser = await currentUser();
   const userData = await prisma.user.findUnique({

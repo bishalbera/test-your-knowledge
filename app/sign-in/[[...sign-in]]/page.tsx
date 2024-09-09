@@ -1,7 +1,8 @@
 import { SignIn } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 const SignInPage = () => {
-  return <SignIn fallbackRedirectUrl="/profile"/>;
+  const user = auth();
+  return <SignIn fallbackRedirectUrl={`/profile/${user.userId}`} />;
 };
-
 export default SignInPage;
