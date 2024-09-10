@@ -1,3 +1,6 @@
+
+"use client"
+
 import { getUserExam } from "@/utils/examUtils";
 import { useRouter } from "next/navigation";
 
