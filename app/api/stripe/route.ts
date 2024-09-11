@@ -22,8 +22,8 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
     );
   }
 
-  const user = await getUserFromClerkID();
-
+  const user = await getUserFromClerkID({ clerkId: true });
+  console.log(user)
   const origin = req.headers.get("origin");
 
   try {
@@ -47,14 +47,14 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
               currency: "INR",
               product_data: {
                 name: examTitle,
-                images: [userExam?.imageUrl],
+                images: [userExam?.imageUrl || "/default-image.jpg"],
               },
               unit_amount: examCost! * 100,
             },
           },
         ],
         mode: "payment",
-        success_url: `${origin}/profile`,
+        success_url: `${origin}/profile/${user.clerkId}`,
         cancel_url: `${origin}/cancel`,
         payment_method_types: ["card"],
         metadata: {

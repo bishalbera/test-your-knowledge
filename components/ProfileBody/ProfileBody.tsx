@@ -1,12 +1,10 @@
 
 "use client"
 
-import { getUserExam } from "@/utils/examUtils";
 import { useRouter } from "next/navigation";
 
 const ProfileBody = async ({ userData }) => {
 
-        const userExam = await getUserExam(userData.id);
         const router = useRouter()
 
         const handleOnClick = () => {

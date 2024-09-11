@@ -119,7 +119,7 @@ export const uploadExam = async (exam: Exam) => {
                         data: {
                                 id: exam.id,
                                 title: exam.title,
-                                imageUrl: exam.imageUrl,
+                                imageUrl: exam.imageUrl || "/default-image.jpg",
                                 description: exam.description,
                                 cost: exam.cost,
                                 timeLimit: exam.timeLimit,

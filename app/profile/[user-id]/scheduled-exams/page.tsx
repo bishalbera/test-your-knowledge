@@ -1,101 +1,112 @@
 "use client";
 
 import Spinner from "@/components/Spinner/Spinner";
-import { getUserExams } from "@/utils/examUtils";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const formatTimeRemaining = (miliseconds: number) => {
-  const totalSeconds = Math.floor(miliseconds / 1000);
-  const days = Math.floor(totalSeconds / (3600 * 24));
-  const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
+        const totalSeconds = Math.floor(miliseconds / 1000);
+        const days = Math.floor(totalSeconds / (3600 * 24));
+        const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
 
-  return { days, hours, minutes, seconds };
+        return { days, hours, minutes, seconds };
 };
 
 const ScheduledExam = () => {
-  const { userId } = useParams();
-  const [timeRemaining, setTimeRemaining] = useState<{ [key: string]: any }>(
-    {}
-  );
+        const searchParams = useSearchParams();
+        const userId = searchParams.get("userId");
+        console.log("userId:", userId);
 
-  const fetchUserExam = async (userId: string) => {
-    const res = await getUserExams(userId);
+        const [timeRemaining, setTimeRemaining] = useState<{ [key: string]: any }>(
+                {}
+        );
 
-    if (res?.length === 0) {
-      throw new Error("No scheduled exams found");
-    }
-    return res;
-  };
+        const fetchUserExam = async (userId: string) => {
+                const res = await fetch(`/api/get-userexams/${userId}`);
+                console.log("resssssssss", res);
+                if (!res.ok) {
+                        throw new Error("Failed to fetch user exam");
+                }
 
-  const {
-    data: userExams,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["userExams", userId],
-    queryFn: () => fetchUserExam(userId?.[0]),
-  });
+                const data = await res.json();
+                return data.length ? data : [];
+        };
 
-  if (isLoading) return <Spinner />;
-  if (isError) return <p>Error loadind exams</p>;
+        const {
+                data: userExams,
+                isLoading,
+                isError,
+        } = useQuery({
+                queryKey: ["userExams", userId],
+                queryFn: () => fetchUserExam(userId!),
+                enabled: !!userId,
+        });
 
-  const filteredExams = userExams?.filter(
-    (exam) => exam.scheduledDateTime && exam.paid
-  );
+        useEffect(() => {
+                const calculateTimeRemaining = (examId: string, scheduledTime: Date) => {
+                        const now = new Date().getTime();
+                        const examTime = new Date(scheduledTime).getTime();
+                        const timeLeft = examTime - now;
 
-  if (!filteredExams) return <p>No scheduled exams found</p>;
+                        setTimeRemaining((prev) => ({
+                                ...prev,
+                                [examId]: timeLeft > 0 ? formatTimeRemaining(timeLeft) : null,
+                        }));
+                };
 
-  useEffect(() => {
+                if (userExams?.length) {
+                        const timeInterval = setInterval(() => {
+                                userExams.forEach((exam) =>
+                                        calculateTimeRemaining(exam.examId, exam.scheduledDateTime)
+                                );
+                        }, 1000);
 
-    const calculateTimeRemaining = (examId: string, scheduledTime: Date) => {
+                        return () => clearInterval(timeInterval);
+                }
+        }, [userExams]);
 
-      const now = new Date().getTime()
-      const examTime = new Date(scheduledTime).getTime()
+        if (isLoading) return <Spinner />;
 
-      const timeLeft = examTime - now
+        if (isError) return <p>Error loading exams</p>;
+        if (!userExams?.length) return <p>No scheduled exams found</p>;
 
-      setTimeRemaining((prev) => ({
+        const filteredExams = userExams.filter((exam) => exam.scheduledDateTime);
 
-        ...prev,
-        [examId]: timeLeft > 0 ? formatTimeRemaining(timeLeft) : null,
-
-
-      }))
-
-
-    }
-
-    const timeInterval = setInterval(() => {
-
-      filteredExams.forEach((exam) =>
-
-        calculateTimeRemaining(exam.examId, exam.scheduledDateTime)
-
-
-      )
-
-    }, 1000)
-
-    return () => clearInterval(timeInterval)
-
-  }, [filteredExams]);
-
-
-
-  return (
-
-    <div>
-
-      <h1>My Scheduled Exams</h1>
-
-
-    </div>
-
-  )
+        return (
+                <div className="min-h-screen mx-auto p-4 bg-primary-color">
+                        <h1 className="text-cus-white text-3xl p-4 font-mono">
+                                My Scheduled Exams
+                        </h1>
+                        <div className="flex justify-center items-center min-h-[70vh]">
+                                <div className="grid grid-cols-1 gap-6">
+                                        {filteredExams.map((exam) => (
+                                                <div
+                                                        key={exam.id}
+                                                        className="bg-custom-dark rounded-lg shadow-md p-6 border transition transform hover:scale-105 hover:shadow-lg w-[600px]"
+                                                >
+                                                        <h2 className="text-xl text-cus-white mb-4">{exam.examTitle}</h2>
+                                                        {timeRemaining[exam.examId] ? (
+                                                                <p className="text-cus-white">
+                                                                        Exam Starts In:
+                                                                        <span className="font-bold">
+                                                                                {timeRemaining[exam.examId].days}d{" "}
+                                                                                {timeRemaining[exam.examId].hours}h{" "}
+                                                                                {timeRemaining[exam.examId].minutes}m{" "}
+                                                                                {timeRemaining[exam.examId].seconds}s
+                                                                        </span>
+                                                                </p>
+                                                        ) : (
+                                                                <p className="text-red-500">Exam has started</p>
+                                                        )}
+                                                </div>
+                                        ))}
+                                </div>
+                        </div>
+                </div>
+        );
 };
 
 export default ScheduledExam;
