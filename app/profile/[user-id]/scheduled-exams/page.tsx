@@ -85,27 +85,59 @@ const ScheduledExam = () => {
           {filteredExams.map((exam) => (
             <div
               key={exam.id}
-              className="relative bg-custom-dark rounded-lg shadow-md p-6 border w-[700px] h-[250px] transition transform hover:scale-105 hover:shadow-lg"
+              className="relative bg-custom-dark rounded-lg shadow-md p-6 border w-[800px] h-[250px] transition transform hover:scale-105 hover:shadow-lg"
             >
-              <div className="absolute top-4 left-4">
-                <p className="text-sm text-gray-400">
-                  {exam.scheduledDateTime.split("T")[0]}
-                </p>
-              </div>
-              <div className="text-center">
-                <h2 className="text-2xl font-semibold text-cus-white mb-4">
-                  {exam.examTitle}
-                </h2>
-                {timeRemaining[exam.examId] ? (
-                  <p className="text-cus-white text-2xl font-bold">
-                    {timeRemaining[exam.examId].days}D{" "}
-                    {timeRemaining[exam.examId].hours}H{" "}
-                    {timeRemaining[exam.examId].minutes}M{" "}
-                    {timeRemaining[exam.examId].seconds}S
-                  </p>
-                ) : (
-                  <p className="text-red-500">Exam has started</p>
-                )}
+              <div className="items-center grid grid-cols-3 h-full">
+                <div className="col-span-2 flex justify-center">
+                  <img
+                    src={exam.imageUrl}
+                    alt="exam-image"
+                    className=" w-full h-[200px] object-fit"
+                  />
+                </div>
+                <div className="col-span-1 pl-4">
+                  <h2 className="text-2xl font-semibold text-cus-white mb-4">
+                    {exam.examTitle}
+                  </h2>
+                  {timeRemaining[exam.examId] ? (
+                    <div className="flex space-x-2">
+                      <div className="flex items-center">
+                        <div className="bg-cus-white rounded shadow-lg text-2xl font-bold p-1">
+                          {timeRemaining[exam.examId].days}
+                        </div>
+                        <span className="px-1 text-md font-medium text-white">
+                          D
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="bg-cus-white rounded shadow-lg text-2xl font-bold p-1">
+                          {timeRemaining[exam.examId].hours}
+                        </div>
+                        <span className="px-1 text-md font-medium text-white">
+                          H
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="bg-cus-white rounded shadow-lg text-2xl font-bold p-1">
+                          {timeRemaining[exam.examId].minutes}
+                        </div>
+                        <span className="px-1 text-md font-medium text-white">
+                          M
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="bg-cus-white rounded shadow-lg text-2xl font-bold p-1">
+                          {timeRemaining[exam.examId].seconds}
+                        </div>
+                        <span className="px-1 text-md font-medium text-white">
+                          S
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-red-500">Exam has started</p>
+                  )}
+                </div>
               </div>
             </div>
           ))}
