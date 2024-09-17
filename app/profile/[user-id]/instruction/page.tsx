@@ -1,43 +1,52 @@
 "use client";
 
-import Spinner from "@/components/Spinner/Spinner";
-import { Exam } from "@prisma/client";
-import { useState } from "react";
-import useSWR from "swr";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const Instruction = ({ params }: { params: { id: string } }) => {
-  const { id } = params;
+const Instruction = ({ params }: { params: { userId: string } }) => {
+  const { userId } = params;
   const [isAgreed, setIsAgreed] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [showExam, setShowExam] = useState(false);
+  const router = useRouter();
 
-  const { data: exam, error } = useSWR<Exam>(
-    `/api/available-exams/${id}`,
-    fetcher
-  );
-  if (error) return <div>Failed to get exam</div>;
-  if (!exam) return <Spinner />;
+  useEffect(() => {
+    const fetchExamtime = async () => {
+      const res = await fetch("/api/get-userexams/");
+      const userExam = await res.json();
+      const now = new Date().getTime();
+      const examTime = new Date(userExam.scheduledDateTime).getTime();
+      const timeLeft = examTime - now;
+      setTimeRemaining(timeLeft);
+    };
+    fetchExamtime();
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => prev - 1000);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [userId]);
 
-  const handleCheckboxChange = () => {
-    setIsAgreed(!isAgreed);
+  useEffect(() => {
+    if (isAgreed && timeRemaining <= 0) {
+      setShowExam(true);
+    }
+  }, [timeRemaining, isAgreed]);
+
+  const handleCheckboxChange = (e) => {
+    setIsAgreed(e.target.checked);
   };
+
+  if (showExam) {
+    return <div></div>;
+  }
 
   return (
     <div className="min-h-screen w-full bg-primary-color flex justify-center">
       <div className="flex flex-col justify-center  border rounded-lg bg-custom-dark w-[700px] h-[800px] mt-4">
-        <h1 className="text-3xl text-cus-white text-center">{exam.title}</h1>
+        {/* <h1 className="text-3xl text-cus-white text-center">
+          {userExam.examTitle}
+        </h1> */}
         <div className="px-4 py-4">
-          <p className="text-lg font-[600] text-cus-white ">
-            Cost: INR{exam.cost}
-          </p>
-
-          <p className="text-lg font-[600] text-cus-white ">
-            Dutation: {exam.timeLimit} minutes
-          </p>
-
-          <p className="text-md  text-cus-white">
-            Description: {exam.description}
-          </p>
           <h2 className="text-xl  text-cus-white font-bold">Instructions</h2>
           <ul className="list-disc pl-5 py-2 text-cus-white">
             <li>This exam must be taken in full-screen mode.</li>
@@ -73,20 +82,20 @@ const Instruction = ({ params }: { params: { id: string } }) => {
               type="checkbox"
               checked={isAgreed}
               onChange={handleCheckboxChange}
+              disabled={timeRemaining > 180000}
               className="mr-2"
             />
             I have read all the instructions
           </label>
-          <button
-            disabled={!isAgreed}
-            className={`mt-4 px-6 py-2 text-cus-white text-lg font-bold rounded-lg ${
-              isAgreed
-                ? "bg-blue-700 hover:bg-blue-900 cursor-pointer"
-                : "bg-gray-500/50 cursor-not-allowed"
-            }`}
-          >
-            Start Exam
-          </button>
+          {timeRemaining <= 0 && isAgreed ? (
+            <p className="bg-custom-dark text-white text-center">Redirecting to exam..</p>
+          ) : (
+            <p className="bg-custom-dark text-white text-center">
+              {timeRemaining > 0
+                ? "Waiting for exam start time..."
+                : "Exam has started"}
+            </p>
+          )}
         </div>
       </div>
     </div>
