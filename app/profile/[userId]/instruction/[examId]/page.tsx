@@ -3,28 +3,37 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const Instruction = ({ params }: { params: { userId: string } }) => {
-  const { userId } = params;
+const Instruction = ({
+  params,
+}: {
+  params: { userId: string; examId: string };
+}) => {
+  const { userId, examId } = params;
   const [isAgreed, setIsAgreed] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [showExam, setShowExam] = useState(false);
   const router = useRouter();
+  console.log(userId);
 
   useEffect(() => {
     const fetchExamtime = async () => {
-      const res = await fetch("/api/get-userexams/");
-      const userExam = await res.json();
-      const now = new Date().getTime();
-      const examTime = new Date(userExam.scheduledDateTime).getTime();
-      const timeLeft = examTime - now;
-      setTimeRemaining(timeLeft);
+      const res = await fetch(`/api/get-userexams/${userId}`);
+      const userExams = await res.json();
+      const userExam = userExams.find((exam) => exam.examId === examId);
+      if (userExam) {
+        const now = new Date().getTime();
+        const examTime = new Date(userExam.scheduledDateTime).getTime();
+        console.log("time", userExam);
+        const timeLeft = examTime - now;
+        setTimeRemaining(timeLeft);
+      }
     };
     fetchExamtime();
     const timer = setInterval(() => {
       setTimeRemaining((prev) => prev - 1000);
     }, 1000);
     return () => clearInterval(timer);
-  }, [userId]);
+  }, [userId, examId]);
 
   useEffect(() => {
     if (isAgreed && timeRemaining <= 0) {
@@ -35,9 +44,10 @@ const Instruction = ({ params }: { params: { userId: string } }) => {
   const handleCheckboxChange = (e) => {
     setIsAgreed(e.target.checked);
   };
-
+  
+  // TODO
   if (showExam) {
-    return <div></div>;
+    return <div>Hiiiiii</div>;
   }
 
   return (
@@ -88,7 +98,9 @@ const Instruction = ({ params }: { params: { userId: string } }) => {
             I have read all the instructions
           </label>
           {timeRemaining <= 0 && isAgreed ? (
-            <p className="bg-custom-dark text-white text-center">Redirecting to exam..</p>
+            <p className="bg-custom-dark text-white text-center">
+              Redirecting to exam..
+            </p>
           ) : (
             <p className="bg-custom-dark text-white text-center">
               {timeRemaining > 0
