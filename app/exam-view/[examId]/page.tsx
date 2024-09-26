@@ -31,14 +31,14 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleAnswer = (questionId, selectedOption) => {
+  const handleAnswer = (questionId: number, selectedOption: number) => {
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
       [questionId]: selectedOption,
     }));
   };
 
-  const handleMarkForReview = (questionId) => {
+  const handleMarkForReview = (questionId: number) => {
     setMarkedForReview((prevMarked) => {
       if (prevMarked.includes(questionId)) {
         return prevMarked.filter((id) => id !== questionId);
