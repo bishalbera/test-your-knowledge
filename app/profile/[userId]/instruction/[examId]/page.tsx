@@ -47,7 +47,8 @@ const Instruction = ({
   
   // TODO
   if (showExam) {
-    return <div>Hiiiiii</div>;
+    // return <div>Hiiiiii</div>;
+    router.push(`/exam-view/${examId}`);
   }
 
   return (

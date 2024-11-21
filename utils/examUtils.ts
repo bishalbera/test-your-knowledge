@@ -67,6 +67,13 @@ export const getExam = async (id: string): Promise<Exam | null> => {
                         where: {
                                 id: id,
                         },
+                        include: {
+                                questions: {
+                                        include: {
+                                                choices: true,
+                                        },
+                                },
+                        }
                 });
                 return exam;
         } catch (error) {

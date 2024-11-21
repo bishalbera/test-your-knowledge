@@ -1,7 +1,7 @@
 "use client";
 
 import Spinner from "@/components/Spinner/Spinner";
-import { Exam } from "@prisma/client";
+import { Exam, ExamQuestion } from "@prisma/client";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -9,54 +9,64 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ExamView = ({ params }: { params: { examId: string } }) => {
   const { examId } = params;
-  const { data: exam, error } = useSWR<Exam>(
+  const { data: exam, error } = useSWR<Exam & { questions: ExamQuestion[] }>(
     `/api/get-exam/${examId}`,
     fetcher
   );
 
-  if (error) return <div>Failed to load exam.</div>;
-  if (!exam) return <Spinner />;
-
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [timeRemaining, setTimeRemaining] = useState(
-    exam.timeLimit * 60 * 1000
-  );
-  const [markedForReview, setMarkedForReview] = useState([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [markedForReview, setMarkedForReview] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (exam) {
+      setTimeRemaining(exam.timeLimit * 60 * 1000);
+    }
+  }, [exam]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeRemaining((prev) => prev - 1000);
+      setTimeRemaining((prev) => Math.max(prev - 1000, 0));
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
-  const handleAnswer = (questionId: number, selectedOption: number) => {
+  const handleAnswer = (questionId: string, selectedOption: string) => {
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
       [questionId]: selectedOption,
     }));
   };
 
-  const handleMarkForReview = (questionId: number) => {
-    setMarkedForReview((prevMarked) => {
-      if (prevMarked.includes(questionId)) {
-        return prevMarked.filter((id) => id !== questionId);
-      } else {
-        return [...prevMarked, questionId];
-      }
-    });
+  const handleMarkForReview = (questionId: string) => {
+    setMarkedForReview((prevMarked) =>
+      prevMarked.includes(questionId)
+        ? prevMarked.filter((id) => id !== questionId)
+        : [...prevMarked, questionId]
+    );
   };
 
   const handleNextQuestion = () => {
     setCurrentQuestionIndex((prevIndex) => {
       const newIndex = prevIndex + 1;
-      if (newIndex >= exam.questions.length) {
-        return prevIndex;
-      }
-      return newIndex;
+      return newIndex < (exam?.questions.length || 0) ? newIndex : prevIndex;
     });
   };
+
+  const handlePreviousQestion = () => {
+    setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0));
+  };
+
+  if (error) return <div>Failed to load exam.</div>;
+  if (!exam) return <Spinner />;
+
+  return (
+    <div className="flex flex-col h-screen">
+      <h1>{exam.title}</h1>
+    </div>
+  );
 };
 
 export default ExamView;
