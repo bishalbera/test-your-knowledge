@@ -33,6 +33,36 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (examId) {
+      window.addEventListener("beforeunload", () => {
+        localStorage.setItem(
+          `exam-${examId}-remaining-time`,
+          timeRemaining.toString()
+        );
+      });
+    }
+    return () => {
+      window.removeEventListener("beforeunload", () => {
+        localStorage.setItem(
+          `exam-${examId}-remaining-time`,
+          timeRemaining.toString()
+        );
+      });
+    };
+  }, [timeRemaining, examId]);
+
+
+  useEffect(() => {
+    if (exam) {
+      const savedTime = localStorage.getItem(`exam-${exam.id}-remaining-time`);
+      setTimeRemaining(
+        savedTime ? parseInt(savedTime, 10) : exam.timeLimit * 60 * 1000
+      );
+    }
+  }, [exam]);
+
+
   const handleAnswer = (questionId: string, selectedChoiceId: string) => {
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
