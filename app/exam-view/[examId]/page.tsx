@@ -20,6 +20,47 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
   const [markedForReview, setMarkedForReview] = useState<string[]>([]);
 
   useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        alert(" Tab switched");
+        //TODO: Add code to submit exam
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  useEffect(() => {
+    const tabId = Math.random().toString(36).substring(7);
+    localStorage.setItem("currentExamTab", tabId);
+
+    const checkTabs = () => {
+      if (localStorage.getItem("currentExamTab") !== tabId) {
+        alert(" Only one tab is allowed for the exam.");
+        window.close();
+      }
+    };
+    window.addEventListener("storage", checkTabs);
+
+    return () => {
+      window.removeEventListener("storage", checkTabs);
+      localStorage.removeItem("currentExamTab");
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleBlur = () => {
+      alert("Minimizing or switiching windows is not allowed during the exam");
+    };
+    window.addEventListener("blur", handleBlur);
+    return () => {
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, []);
+
+  useEffect(() => {
     if (exam) {
       setTimeRemaining(exam.timeLimit * 60 * 1000);
     }
@@ -52,7 +93,6 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
     };
   }, [timeRemaining, examId]);
 
-
   useEffect(() => {
     if (exam) {
       const savedTime = localStorage.getItem(`exam-${exam.id}-remaining-time`);
@@ -61,7 +101,6 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
       );
     }
   }, [exam]);
-
 
   const handleAnswer = (questionId: string, selectedChoiceId: string) => {
     setAnswers((prevAnswers) => ({
