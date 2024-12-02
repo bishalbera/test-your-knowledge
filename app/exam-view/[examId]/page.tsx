@@ -2,7 +2,7 @@
 
 import ExamHeader from "@/components/ExamHeader/ExamHeader";
 import Spinner from "@/components/Spinner/Spinner";
-import { Exam, ExamQuestion, Questionchoice } from "@prisma/client";
+import { Exam, ExamQuestion, Questionchoice, User } from "@prisma/client";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -13,6 +13,11 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
   const { data: exam, error } = useSWR<
     Exam & { questions: (ExamQuestion & { choices: Questionchoice[] })[] }
   >(`/api/get-exam/${examId}`, fetcher);
+
+  const { data: userData, error: userError } = useSWR<User | null>(
+    "/api/get-user",
+    fetcher
+  );
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -135,14 +140,14 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
       .toString()
       .padStart(2, "0")}`;
   };
-  if (error) return <div>Failed to load exam.</div>;
-  if (!exam) return <Spinner />;
+  if (error || userError) return <div>Failed to load data.</div>;
+  if (!exam || !userData) return <Spinner />;
 
   const currentQuestion = exam.questions[currentQuestionIndex];
 
   return (
     <div className="flex flex-col h-screen">
-      <ExamHeader exam={exam} />
+      <ExamHeader exam={exam} userData={userData} />
       <div className="flex-grow flex">
         <div className="w-1/4 p-4 border-r border-gray-200">
           <div className="mb-4">

@@ -1,14 +1,23 @@
-import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/utils/db";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export const GET = async () => {
   try {
-    const userId = auth();
+    const cUser = await currentUser();
 
-    return NextResponse.json(userId);
+    if (!cUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId: cUser.id },
+    });
+
+    return NextResponse.json(user);
   } catch (error) {
     return NextResponse.json(
-      { message: "Faild to get usedId" },
+      { message: "Internal server error" },
       { status: 500, statusText: error as string }
     );
   }
