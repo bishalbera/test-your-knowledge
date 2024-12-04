@@ -24,46 +24,46 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [markedForReview, setMarkedForReview] = useState<string[]>([]);
 
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        alert(" Tab switched");
-        //TODO: Add code to submit exam
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
+  //     useEffect(() => {
+  //       const handleVisibilityChange = () => {
+  //         if (document.visibilityState === "hidden") {
+  //           alert(" Tab switched");
+  //           //TODO: Add code to submit exam
+  //         }
+  //       };
+  //       document.addEventListener("visibilitychange", handleVisibilityChange);
+  //       return () => {
+  //         document.removeEventListener("visibilitychange", handleVisibilityChange);
+  //       };
+  //     }, []);
 
-  useEffect(() => {
-    const tabId = Math.random().toString(36).substring(7);
-    localStorage.setItem("currentExamTab", tabId);
+  //     useEffect(() => {
+  //       const tabId = Math.random().toString(36).substring(7);
+  //       localStorage.setItem("currentExamTab", tabId);
 
-    const checkTabs = () => {
-      if (localStorage.getItem("currentExamTab") !== tabId) {
-        alert(" Only one tab is allowed for the exam.");
-        window.close();
-      }
-    };
-    window.addEventListener("storage", checkTabs);
+  //       const checkTabs = () => {
+  //         if (localStorage.getItem("currentExamTab") !== tabId) {
+  //           alert(" Only one tab is allowed for the exam.");
+  //           window.close();
+  //         }
+  //       };
+  //       window.addEventListener("storage", checkTabs);
 
-    return () => {
-      window.removeEventListener("storage", checkTabs);
-      localStorage.removeItem("currentExamTab");
-    };
-  }, []);
+  //       return () => {
+  //         window.removeEventListener("storage", checkTabs);
+  //         localStorage.removeItem("currentExamTab");
+  //       };
+  //     }, []);
 
-  useEffect(() => {
-    const handleBlur = () => {
-      alert("Minimizing or switiching windows is not allowed during the exam");
-    };
-    window.addEventListener("blur", handleBlur);
-    return () => {
-      window.removeEventListener("blur", handleBlur);
-    };
-  }, []);
+  //     useEffect(() => {
+  //       const handleBlur = () => {
+  //         alert("Minimizing or switiching windows is not allowed during the exam");
+  //       };
+  //       window.addEventListener("blur", handleBlur);
+  //       return () => {
+  //         window.removeEventListener("blur", handleBlur);
+  //       };
+  //     }, []);
 
   useEffect(() => {
     if (exam) {
@@ -98,14 +98,17 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
     };
   }, [timeRemaining, examId]);
 
-  useEffect(() => {
-    if (exam) {
-      const savedTime = localStorage.getItem(`exam-${exam.id}-remaining-time`);
-      setTimeRemaining(
-        savedTime ? parseInt(savedTime, 10) : exam.timeLimit * 60 * 1000
-      );
-    }
-  }, [exam]);
+ useEffect(() => {
+   if (exam) {
+     const savedTime = localStorage.getItem(`exam-${exam.id}-remaining-time`);
+     const remainingTime =
+       savedTime && parseInt(savedTime, 10) > 0
+         ? parseInt(savedTime, 10)
+         : exam.timeLimit * 60 * 1000;
+     setTimeRemaining(remainingTime);
+   }
+ }, [exam]);
+
 
   const handleAnswer = (questionId: string, selectedChoiceId: string) => {
     setAnswers((prevAnswers) => ({
@@ -143,81 +146,118 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
   if (error || userError) return <div>Failed to load data.</div>;
   if (!exam || !userData) return <Spinner />;
 
+
   const currentQuestion = exam.questions[currentQuestionIndex];
+  const notVisitedQuestions =
+    exam.questions.length -
+    Object.keys(answers).length -
+    markedForReview.length;
+  const notAnsweredQuestions = exam.questions.filter(
+    (question) => !answers[question.id]
+  ).length;
+  const markedForReviewCount = markedForReview.length;
 
   return (
-    <div className="flex flex-col h-screen">
-      <ExamHeader exam={exam} userData={userData} />
-      <div className="flex-grow flex">
-        <div className="w-1/4 p-4 border-r border-gray-200">
-          <div className="mb-4">
+    <div className="flex flex-col h-screen bg-gray-900 text-gray-300">
+      <ExamHeader
+        exam={exam}
+        userData={userData}
+        timeRemaining={formatTime(timeRemaining)}
+      />
+      <div className="mt-16">
+        <div className="flex-grow flex">
+          <div className=" w-1/4 pl-4 pr-4 bg-gray-800 text-gray-300">
+            {/* <div className="mb-4 mt-4">
             <div className="font-semibold">Remaining Time</div>
             <div className="text-xl font-bold">{formatTime(timeRemaining)}</div>
-          </div>
-          <div>
-            {exam.questions.map((question, index) => (
-              <button
-                key={question.id}
-                className={`w-10 h-10 rounded-full border ${
-                  answers[question.id]
-                    ? "bg-green-500"
-                    : markedForReview.includes(question.id)
-                    ? "bg-purple-500"
-                    : "bg-gray-200"
-                }`}
-                onClick={() => setCurrentQuestionIndex(index)}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="flex-grow p-8">
-          <div className="text-lg font-semibold">
-            Question {currentQuestionIndex + 1}:
-          </div>
-          <div className="text-gray-800 mb-4 ">
-            {" "}
-            {currentQuestion?.questionText}
-          </div>
-          <div className="space-y-4">
-            {currentQuestion?.choices.map((choice) => (
-              <div key={choice.id} className="flex items-center">
-                <input
-                  type="radio"
-                  id={choice.id}
-                  name={`question-${currentQuestion.id}`}
-                  checked={answers[currentQuestion.id] === choice.id}
-                  onChange={() => handleAnswer(currentQuestion.id, choice.id)}
-                  className="mr-2"
-                />
-                <label htmlFor={choice.id}>{choice.choiceAnswer}</label>
+          </div> */}
+            <div className="mt-2 mb-2 flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-sm text-white mb-2">
+                  {notVisitedQuestions}
+                </div>
+                <span className="text-gray-300">Not Visited</span>
               </div>
-            ))}
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-purple-500  flex items-center justify-center text-sm text-white mb-2">
+                  {markedForReviewCount}
+                </div>
+                <span className="text-gray-300">Marked for Review</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full flex items-center justify-center bg-red-500 text-sm text-white mb-2">
+                  {notAnsweredQuestions}
+                </div>
+                <span className="text-gray-300">Not Answered</span>
+              </div>
+            </div>
+            <div>
+              {exam.questions.map((question, index) => (
+                <button
+                  key={question.id}
+                  className={`w-10 h-10 rounded-full border ${
+                    answers[question.id]
+                      ? "bg-green-500"
+                      : markedForReview.includes(question.id)
+                      ? "bg-purple-500"
+                      : "bg-gray-700"
+                  }`}
+                  onClick={() => setCurrentQuestionIndex(index)}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex space-x-4 mt-6">
-            <button
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-              onClick={() => handleMarkForReview(currentQuestion.id)}
-            >
-              {markedForReview.includes(currentQuestion.id)
-                ? "Unmark for Review"
-                : "Mark for Review"}
-            </button>
-            <button
-              className="px-4 py-2 bg-gray-500 text-white rounded"
-              onClick={handlePreviousQestion}
-              disabled={currentQuestionIndex === 0}
-            >
-              Previous
-            </button>
-            <button
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-              onClick={handleNextQuestion}
-              disabled={currentQuestionIndex === exam.questions.length - 1}
-            >
-              Next
-            </button>
+          <div className="flex-grow pl-6 pr-6 bg-gray-900 text-gray-200">
+            <div className="text-lg font-semibold text-gray-100">
+              Question {currentQuestionIndex + 1}:
+            </div>
+            <div className="text-gray-300 mb-4 font-mono font-semibold">
+              {" "}
+              {currentQuestion?.questionText}
+            </div>
+            <div className="space-y-4">
+              {currentQuestion?.choices.map((choice) => (
+                <div key={choice.id} className="flex items-center">
+                  <input
+                    type="radio"
+                    id={choice.id}
+                    name={`question-${currentQuestion.id}`}
+                    checked={answers[currentQuestion.id] === choice.id}
+                    onChange={() => handleAnswer(currentQuestion.id, choice.id)}
+                    className="mr-2 accent-blue-500"
+                  />
+                  <label htmlFor={choice.id} className="text-gray-200">
+                    {choice.choiceAnswer}
+                  </label>
+                </div>
+              ))}
+            </div>
+            <div className="flex space-x-4 mt-6">
+              <button
+                className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded"
+                onClick={() => handleMarkForReview(currentQuestion.id)}
+              >
+                {markedForReview.includes(currentQuestion.id)
+                  ? "Unmark for Review"
+                  : "Mark for Review"}
+              </button>
+              <button
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-transform active:scale-95"
+                onClick={handlePreviousQestion}
+                disabled={currentQuestionIndex === 0}
+              >
+                Previous
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded active:scale-95 transition-transform"
+                onClick={handleNextQuestion}
+                disabled={currentQuestionIndex === exam.questions.length - 1}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -13,9 +13,15 @@ const config: Config = {
         "button-color": "#AD49E1",
         "button-hover-color": "#7A1CAC",
         "text-color": "#EBD3F8",
-        "custom-dark": "hsl(220, 18%, 3%)", 
+        "custom-dark": "hsl(220, 18%, 3%)",
         "cus-white": "hsl(0,0%,100%)",
         "white-transparent": "hsla(0,0%,100%,0.06)",
+        background: "#121212",
+        primary: "#1f2937", // Dark gray
+        secondary: "#374151", // Lighter gray
+        accent: "#6366f1", // Purple
+        danger: "#ef4444", // Red
+        success: "#22c55e", // Green
       },
     },
     keyframes: {
