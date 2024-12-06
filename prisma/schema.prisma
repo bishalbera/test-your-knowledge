@@ -23,7 +23,6 @@ model User {
   imageUrl String?
   paymentDone Boolean @default(false)
   exams UserExam[]
-  Score Int?
 }
 
 model Exam {
@@ -81,6 +80,7 @@ model UserExam {
   scheduledDateTime DateTime
   paid Boolean @default(false)
   dateSubmitted DateTime
+  Score Int?
   answers UserChoice[]
 
   user User @relation(fields: [userId], references: [id])
