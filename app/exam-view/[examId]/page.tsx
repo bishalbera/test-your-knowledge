@@ -98,23 +98,43 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
     };
   }, [timeRemaining, examId]);
 
- useEffect(() => {
-   if (exam) {
-     const savedTime = localStorage.getItem(`exam-${exam.id}-remaining-time`);
-     const remainingTime =
-       savedTime && parseInt(savedTime, 10) > 0
-         ? parseInt(savedTime, 10)
-         : exam.timeLimit * 60 * 1000;
-     setTimeRemaining(remainingTime);
-   }
- }, [exam]);
+  useEffect(() => {
+    if (exam) {
+      const savedTime = localStorage.getItem(`exam-${exam.id}-remaining-time`);
+      const remainingTime =
+        savedTime && parseInt(savedTime, 10) > 0
+          ? parseInt(savedTime, 10)
+          : exam.timeLimit * 60 * 1000;
+      setTimeRemaining(remainingTime);
+    }
+  }, [exam]);
 
-
-  const handleAnswer = (questionId: string, selectedChoiceId: string) => {
+  const handleAnswer = async (questionId: string, selectedChoiceId: string) => {
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
       [questionId]: selectedChoiceId,
     }));
+
+    try {
+      const userExamId = examId;
+
+      const response = await fetch("/api/save-answer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          questionId,
+          selectedChoiceId,
+          userExamId,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to save answer", errorData.error);
+      }
+    } catch (error) {
+      console.error("Error saving answer", error);
+    }
   };
 
   const handleMarkForReview = (questionId: string) => {
@@ -126,6 +146,19 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
   };
 
   const handleNextQuestion = () => {
+    if (
+      !exam ||
+      !exam.questions ||
+      currentQuestionIndex >= exam.questions.length
+    ) {
+      return;
+    }
+    const currentQuestion = exam.questions[currentQuestionIndex];
+    const selectedChoiceId = answers[currentQuestion.id];
+
+    if (selectedChoiceId) {
+      handleAnswer(currentQuestion.id, selectedChoiceId);
+    }
     setCurrentQuestionIndex((prevIndex) => {
       const newIndex = prevIndex + 1;
       return newIndex < (exam?.questions.length || 0) ? newIndex : prevIndex;
@@ -145,7 +178,6 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
   };
   if (error || userError) return <div>Failed to load data.</div>;
   if (!exam || !userData) return <Spinner />;
-
 
   const currentQuestion = exam.questions[currentQuestionIndex];
   const notVisitedQuestions =
@@ -195,13 +227,12 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
               {exam.questions.map((question, index) => (
                 <button
                   key={question.id}
-                  className={`w-10 h-10 rounded-full border ${
-                    answers[question.id]
+                  className={`w-10 h-10 rounded-full border ${answers[question.id]
                       ? "bg-green-500"
                       : markedForReview.includes(question.id)
-                      ? "bg-purple-500"
-                      : "bg-gray-700"
-                  }`}
+                        ? "bg-purple-500"
+                        : "bg-gray-700"
+                    }`}
                   onClick={() => setCurrentQuestionIndex(index)}
                 >
                   {index + 1}
