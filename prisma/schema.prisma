@@ -68,6 +68,8 @@ model UserChoice {
   userExam UserExam @relation(fields: [userExamId], references: [id])
   question ExamQuestion @relation(fields: [questionId], references: [id])
 
+  @@unique([ userExamId, questionId])
+
 }
 
 model UserExam {

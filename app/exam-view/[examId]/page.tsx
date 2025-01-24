@@ -228,10 +228,10 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
                 <button
                   key={question.id}
                   className={`w-10 h-10 rounded-full border ${answers[question.id]
-                      ? "bg-green-500"
-                      : markedForReview.includes(question.id)
-                        ? "bg-purple-500"
-                        : "bg-gray-700"
+                    ? "bg-green-500"
+                    : markedForReview.includes(question.id)
+                      ? "bg-purple-500"
+                      : "bg-gray-700"
                     }`}
                   onClick={() => setCurrentQuestionIndex(index)}
                 >
@@ -286,7 +286,7 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
                 onClick={handleNextQuestion}
                 disabled={currentQuestionIndex === exam.questions.length - 1}
               >
-                Next
+                {currentQuestionIndex === exam.questions.length - 1 ? "Submit" : "Next"}
               </button>
             </div>
           </div>
