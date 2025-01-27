@@ -136,7 +136,28 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
       console.error("Error saving answer", error);
     }
   };
+  
+  const handleSubmitExam = async () => {
+    try {
+      const examId = exam?.id;
+      const userId = userData?.id;
+      console.log("Answers object:", answers);
 
+
+      const res = await fetch("/api/submit-exam", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, examId }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Failed to submit the exam", errorData.error);
+      }
+    } catch (error) {
+      console.error("Error submitting the exam", error);
+    }
+  };
   const handleMarkForReview = (questionId: string) => {
     setMarkedForReview((prevMarked) =>
       prevMarked.includes(questionId)
@@ -227,12 +248,13 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
               {exam.questions.map((question, index) => (
                 <button
                   key={question.id}
-                  className={`w-10 h-10 rounded-full border ${answers[question.id]
-                    ? "bg-green-500"
-                    : markedForReview.includes(question.id)
+                  className={`w-10 h-10 rounded-full border ${
+                    answers[question.id]
+                      ? "bg-green-500"
+                      : markedForReview.includes(question.id)
                       ? "bg-purple-500"
                       : "bg-gray-700"
-                    }`}
+                  }`}
                   onClick={() => setCurrentQuestionIndex(index)}
                 >
                   {index + 1}
@@ -283,10 +305,16 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
               </button>
               <button
                 className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded active:scale-95 transition-transform"
-                onClick={handleNextQuestion}
-                disabled={currentQuestionIndex === exam.questions.length - 1}
+                onClick={
+                  currentQuestionIndex === exam.questions.length - 1
+                    ? handleSubmitExam
+                    : handleNextQuestion
+                }
+                // disabled={currentQuestionIndex === exam.questions.length - 1}
               >
-                {currentQuestionIndex === exam.questions.length - 1 ? "Submit" : "Next"}
+                {currentQuestionIndex === exam.questions.length - 1
+                  ? "Submit"
+                  : "Next"}
               </button>
             </div>
           </div>

@@ -67,7 +67,9 @@ export const getExams = async (): Promise<Exam[] | null> => {
   }
 };
 
-export const getExam = async (id: string): Promise<ExamWithQuestions | null> => {
+export const getExam = async (
+  id: string
+): Promise<ExamWithQuestions | null> => {
   try {
     const exam = await prisma.exam.findUniqueOrThrow({
       where: {
@@ -118,70 +120,65 @@ export const getUserExams = async (
 };
 
 interface SubmitExamProps {
-  userId: string
-  examId: string
-  userAnswers: { questionId: string; selectedChoice: string }[];
+  userId: string;
+  examId: string;
 }
-export const submitExam = async ({ userId, examId, userAnswers }: SubmitExamProps) => {
+export const submitExam = async ({ userId, examId }: SubmitExamProps) => {
   try {
-
     const examQuestions = await prisma.examQuestion.findMany({
       where: {
-        examId: examId
+        examId: examId,
       },
-      include: {
-        choices: true,
-        UserChoice: true
-      }
-    })
+    });
 
-    let correctAnswers = 0
-    let wrongAnswers = 0
-    let totalQuestions = examQuestions.length
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
 
-    for (const userAnswer of userAnswers) {
-      const question = examQuestions.find(
-        (q) => q.id === userAnswer.questionId
-      )
+    let totalQuestions = examQuestions.length;
+    const choices = await prisma.userChoice.findMany({
+      where: {
+        examId: examId,
+      },
+    });
 
-      if (question) {
-        const correctChoice = question.UserChoice.find((choice) => choice.isCorrect)
-
-        if (correctChoice && correctChoice.id === userAnswer.selectedChoice) {
-          correctAnswers += 1
-        } else {
-          wrongAnswers += 1
-        }
+    for (const choice of choices) {
+      if (choice.isCorrect) {
+        correctAnswers += 1;
+      } else {
+        wrongAnswers += 1;
       }
     }
 
-    const score = correctAnswers * 4 - wrongAnswers
-    const percentage = (correctAnswers / totalQuestions) * 100
+    const score = correctAnswers * 4 - wrongAnswers;
+
+    console.log("Final Results: ", {
+      correctAnswers,
+      wrongAnswers,
+      score,
+    });
 
     await prisma.userExam.update({
       where: {
         userId_examId: {
           userId,
           examId,
-        }
+        },
       },
       data: {
-        Score: score
-      }
-    })
+        Score: score,
+        totalQuestions: totalQuestions,
+      },
+    });
 
     return {
       message: "Exam submitted successfully!",
       score,
-      percentage,
-    }
-
+    };
   } catch (error) {
-    console.log("Error submitting the exam", error)
-    throw new Error("Failed to submit the exam. Please try again.")
+    console.log("Error submitting the exam", error);
+    throw new Error("Failed to submit the exam. Please try again.");
   }
-
-}
+};
 
 export const uploadExam = async (exam: Exam) => {
   try {

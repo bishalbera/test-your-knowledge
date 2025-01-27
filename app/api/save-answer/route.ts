@@ -70,6 +70,7 @@ export const POST = async (req: NextRequest) => {
                         },
                         create: {
                                 questionId,
+                                examId: exam.examId,
                                 userchoice: selectedChoiceId,
                                 userExamId: exam.id,
                                 isCorrect,

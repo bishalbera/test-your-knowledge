@@ -65,6 +65,7 @@ model UserChoice {
   isCorrect Boolean @default(false)
   userchoice String
   userExamId String
+  examId String
   userExam UserExam @relation(fields: [userExamId], references: [id])
   question ExamQuestion @relation(fields: [questionId], references: [id])
 
