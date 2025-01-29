@@ -5,6 +5,9 @@
 .calendar-custom {
   @apply bg-cus-white text-black  rounded p-4;
 }
+html {
+  scroll-behavior: smooth;
+}
 /* 
 .calendar-custom .react-calendar__tile {
   @apply text-black bg-cus-white rounded hover:bg-blue-500 hover:text-white;

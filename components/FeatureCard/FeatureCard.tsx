@@ -1,47 +1,71 @@
-import { FaRegClock, FaLock, FaLaptopCode, FaChartLine } from "react-icons/fa6";
+import { motion } from "framer-motion";
+import {
+  FaRegClock,
+  FaShieldAlt,
+  FaMoneyBillWave,
+  FaChartLine,
+} from "react-icons/fa";
 
-const FeatureCard = () => {
+const features = [
+  {
+    title: "Seamless Exam Scheduling",
+    description:
+      "Schedule exams effortlessly with our flexible time slot system.",
+    icon: <FaRegClock size={40} className="text-blue-500" />,
+  },
+  {
+    title: "Secure Online Payments",
+    description:
+      "Make transactions with confidence through our encrypted payment gateway.",
+    icon: <FaMoneyBillWave size={40} className="text-green-500" />,
+  },
+  {
+    title: "Real-Time Exam Experience",
+    description: "Get a smooth and reliable online examination experience.",
+    icon: <FaShieldAlt size={40} className="text-red-500" />,
+  },
+  {
+    title: "Instant Results & Analytics",
+    description:
+      "Receive immediate feedback and performance insights post-exam.",
+    icon: <FaChartLine size={40} className="text-purple-500" />,
+  },
+];
+
+export default function Features() {
   return (
-    <div className="grid grid-cols-2 gap-6 p-8">
-      <div className="bg-[#13678A] text-white rounded-lg p-6 shadow-lg">
-        <FaRegClock className="text-4xl text-blue-500 mb-4 mx-auto " />
-        <h3 className="text-xl font-semibold mb-4">Seamless Exam Scheduling</h3>
-        <p>
-          Choose your preferred time slot and take the exam at your convenience.
-          Our flexible scheduling ensures you can focus when you're at your
-          best.
-        </p>
-      </div>
-      <div className="bg-[#13678A] text-grey/70 rounded-lg p-6 shadow-lg ">
-        <FaLock className="text-4xl text-blue-500 mb-4 mx-auto" />
-        <h3 className="text-xl font-semibold mb-4">Secure Online Payments</h3>
-        <p>
-          Pay securely through our platform to unlock access to the exam. We
-          prioritize your safety with trusted payment gateways.
-        </p>
-      </div>
-      <div className="bg-[#13678A] text-grey/70 rounded-lg p-6 shadow-lg ">
-        <FaLaptopCode className="text-4xl text-blue-500 mb-4 mx-auto" />
-        <h3 className="text-xl font-semibold mb-4">
-          Real-Time Exam Experience
-        </h3>
-        <p>
-          Experience a real-time, fully online exam with a user-friendly
-          interface. Our platform mimics the environment of competitive exams.
-        </p>
-      </div>
-      <div className="bg-[#13678A] text-grey/70 rounded-lg p-6 shadow-lg ">
-        <FaChartLine className="text-4xl text-blue-500 mb-4 mx-auto" />
-        <h3 className="text-xl font-semibold mb-4">
-          Instant Results and Analytics
-        </h3>
-        <p>
-          Get your results immediately after submitting your exam. Analyze your
-          performance with detailed insights and improve your preparation.
-        </p>
-      </div>
-    </div>
-  );
-};
+    <section className="py-16 bg-gray-100">
+      <div className="container mx-auto text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: -30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-3xl font-bold text-gray-800 mb-8"
+        >
+          Why Choose Us?
+        </motion.h2>
 
-export default FeatureCard;
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: index * 0.2 }}
+              whileHover={{ scale: 1.05 }}
+              className="relative bg-white shadow-lg rounded-2xl overflow-hidden p-6 flex flex-col items-center text-center space-y-4 transition-transform duration-300 hover:shadow-2xl"
+            >
+              <div className="bg-gray-100 p-4 rounded-full">{feature.icon}</div>
+              <h3 className="text-xl font-semibold text-gray-700">
+                {feature.title}
+              </h3>
+              <p className="text-gray-600">{feature.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

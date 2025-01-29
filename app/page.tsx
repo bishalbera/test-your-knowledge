@@ -1,28 +1,82 @@
-import FeatureCard from "@/components/FeatureCard/FeatureCard";
-import Footer from "@/components/Footer/Footer";
-import Header from "@/components/Header/Header";
+"use client";
+import { motion } from "framer-motion";
+import { FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa6";
+import { useState, useEffect } from "react";
+import Features from "@/components/FeatureCard/FeatureCard";
+import Hero from "@/components/Hero/Hero";
+
+const testimonials = [
+  {
+    name: "John Doe",
+    feedback: "ExamEase made my exams so much easier!",
+    image: "/me.JPG",
+  },
+  {
+    name: "Jane Smith",
+    feedback: "I loved the real-time experience!",
+    image: "/jane.jpg",
+  },
+  {
+    name: "Ali Khan",
+    feedback: "Highly recommend this platform for students.",
+    image: "/ali.jpg",
+  },
+];
 
 export default function Home() {
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % testimonials.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-primary-color text-white p-2">
-      <Header />
-      <div className=" flex flex-grow ">
-        <div className="w-full mx-auto max-w-[800px]  mt-32 scroll-wrapper ">
-          <h1 className="supports-no-scroll-driven-animations:animate-none text-[4rem] my-5  font-mono animate-fade-out-down [animation-timeline:scroll()] [animation-range:0px_300px]">
-            Test Your Knowledge
-          </h1>
-          <p className=" text-xl mb-6 text-white/60 p-1  fancy-text">
-            Welcome to TYK, an online platform for those who want to brush up
-            their knowledge. Sign up, choose your preferred time slot, and take
-            a 2-hour MCQ exam. Practice, track your progress, and excel in your
-            preparation with our real-world exam experience.
-          </p>
+    <div className="min-h-screen flex flex-col bg-gray-900 text-gray-300">
+      {/* Hero Section */}
+     <Hero />
+
+      {/* Features Section */}
+     <Features />
+      {/* Testimonials Carousel */}
+      <section className="py-12 bg-gray-800 relative">
+        <h2 className="text-3xl font-bold text-center text-white mb-8">
+          What Our Users Say
+        </h2>
+        <div className="relative overflow-hidden max-w-2xl mx-auto">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex flex-col items-center bg-gray-700 p-6 rounded-lg shadow-xl"
+          >
+            <img
+              src={testimonials[current].image}
+              alt={testimonials[current].name}
+              className="w-16 h-16 rounded-full mb-4 border-2 border-white"
+            />
+            <p className="text-lg text-white italic">
+              "{testimonials[current].feedback}"
+            </p>
+            <h4 className="mt-2 text-white font-semibold">
+              - {testimonials[current].name}
+            </h4>
+          </motion.div>
         </div>
-      </div>
-      <h2 className="pl-8 font-bold font-mono text-lg">Features</h2>
-      <FeatureCard />
-      <Footer />
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-gray-300 py-8 text-center">
+        <p>© 2024 ExamEase. All rights reserved.</p>
+        <div className="flex justify-center gap-4 mt-4">
+          <FaFacebook className="text-blue-600 hover:text-white" size={24} />
+          <FaTwitter className="text-blue-400 hover:text-white" size={24} />
+          <FaLinkedin className="text-blue-700 hover:text-white" size={24} />
+        </div>
+      </footer>
     </div>
   );
 }
