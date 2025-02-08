@@ -2,7 +2,8 @@ import { getExam } from "@/utils/examUtils"
 import { NextResponse, NextRequest } from "next/server"
 
 
-export const GET = async (req: NextRequest, { params }: { params: { examId: string } }) => {
+export const GET = async (req: NextRequest, props: { params: Promise<{ examId: string }> }) => {
+        const params = await props.params;
 
         try {
 
@@ -30,7 +31,4 @@ export const GET = async (req: NextRequest, { params }: { params: { examId: stri
                 return NextResponse.json({ error: "Failer to retrieve the exam" }, { status: 500 })
 
         }
-
-
-
 }

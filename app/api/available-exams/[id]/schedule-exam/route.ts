@@ -3,10 +3,8 @@ import { prisma } from "@/utils/db";
 import { getExam } from "@/utils/examUtils";
 import { NextRequest, NextResponse } from "next/server";
 
-export const POST = async (
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) => {
+export const POST = async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
+  const params = await props.params;
   try {
     const user = await getUserFromClerkID();
     const body = await req.json();

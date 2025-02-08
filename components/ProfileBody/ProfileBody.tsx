@@ -3,7 +3,7 @@
 
 import { useRouter } from "next/navigation";
 
-const ProfileBody = async ({ userData }) => {
+const ProfileBody =  ({ userData }) => {
 
         const router = useRouter()
 

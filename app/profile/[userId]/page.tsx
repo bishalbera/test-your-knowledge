@@ -6,17 +6,18 @@ import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
 
-const ProfilePage = async ({params}: {params:{id: string}}) => {
+const ProfilePage = async (props: { params: Promise<{ id: string }> }) => {
+  const params = await props.params;
   await addUserToDb();
 
-  const { id } = params
- 
-  
 
   const cUser = await currentUser();
+   if (!cUser) {
+     return <p className="text-center text-red-500">User not found.</p>;
+   }
   const userData = await prisma.user.findUnique({
     where: {
-      clerkId: cUser?.id,
+      clerkId: cUser.id,
     },
   });
 

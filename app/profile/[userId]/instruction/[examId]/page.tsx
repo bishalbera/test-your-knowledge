@@ -1,13 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 
-const Instruction = ({
-  params,
-}: {
-  params: { userId: string; examId: string };
-}) => {
+const Instruction = (
+  props: {
+    params: Promise<{ userId: string; examId: string }>;
+  }
+) => {
+  const params = use(props.params);
   const { userId, examId } = params;
   const [isAgreed, setIsAgreed] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -44,7 +45,7 @@ const Instruction = ({
   const handleCheckboxChange = (e) => {
     setIsAgreed(e.target.checked);
   };
-  
+
   // TODO
   if (showExam) {
     // return <div>Hiiiiii</div>;

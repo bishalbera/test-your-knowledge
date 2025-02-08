@@ -5,9 +5,10 @@ import Spinner from "@/components/Spinner/Spinner";
 import { getStripe } from "@/utils/stripe";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, use } from "react";
 
-const ScheduleExam = ({ params }: { params: { id: string } }) => {
+const ScheduleExam = (props: { params: Promise<{ id: string }> }) => {
+  const params = use(props.params);
   const { id } = params;
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(2);

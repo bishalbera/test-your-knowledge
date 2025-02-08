@@ -3,12 +3,13 @@
 import ExamHeader from "@/components/ExamHeader/ExamHeader";
 import Spinner from "@/components/Spinner/Spinner";
 import { Exam, ExamQuestion, Questionchoice, User } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import useSWR from "swr";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const ExamView = ({ params }: { params: { examId: string } }) => {
+const ExamView = (props: { params: Promise<{ examId: string }> }) => {
+  const params = use(props.params);
   const { examId } = params;
   const { data: exam, error } = useSWR<
     Exam & { questions: (ExamQuestion & { choices: Questionchoice[] })[] }
@@ -136,7 +137,7 @@ const ExamView = ({ params }: { params: { examId: string } }) => {
       console.error("Error saving answer", error);
     }
   };
-  
+
   const handleSubmitExam = async () => {
     try {
       const examId = exam?.id;

@@ -1,10 +1,8 @@
 import { getUserExams } from "@/utils/examUtils";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (
-  req: NextRequest,
-  { params }: { params: { userId: string } }
-) => {
+export const GET = async (req: NextRequest, props: { params: Promise<{ userId: string }> }) => {
+  const params = await props.params;
   try {
     const { userId } = params;
 
