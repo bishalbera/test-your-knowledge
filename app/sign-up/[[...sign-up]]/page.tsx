@@ -1,9 +1,9 @@
 import { SignUp } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 
-const SignUpPage =  () => {
+const SignUpPage =  async () => {
 
-        const user =  auth()
+        const user =  await auth()
         console.log(user)
         return <SignUp fallbackRedirectUrl={`/profile/${user.userId}`} />;
 };

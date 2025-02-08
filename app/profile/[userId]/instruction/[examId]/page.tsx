@@ -3,36 +3,35 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
 
-const Instruction = (
-  props: {
-    params: Promise<{ userId: string; examId: string }>;
-  }
-) => {
+const Instruction = (props: {
+  params: Promise<{ userId: string; examId: string }>;
+}) => {
   const params = use(props.params);
   const { userId, examId } = params;
   const [isAgreed, setIsAgreed] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [showExam, setShowExam] = useState(false);
   const router = useRouter();
-  console.log(userId);
 
   useEffect(() => {
-    const fetchExamtime = async () => {
+    const fetchExamTime = async () => {
       const res = await fetch(`/api/get-userexams/${userId}`);
       const userExams = await res.json();
       const userExam = userExams.find((exam) => exam.examId === examId);
       if (userExam) {
         const now = new Date().getTime();
         const examTime = new Date(userExam.scheduledDateTime).getTime();
-        console.log("time", userExam);
         const timeLeft = examTime - now;
         setTimeRemaining(timeLeft);
       }
     };
-    fetchExamtime();
+
+    fetchExamTime();
+
     const timer = setInterval(() => {
       setTimeRemaining((prev) => prev - 1000);
     }, 1000);
+
     return () => clearInterval(timer);
   }, [userId, examId]);
 
@@ -42,24 +41,21 @@ const Instruction = (
     }
   }, [timeRemaining, isAgreed]);
 
+  useEffect(() => {
+    if (showExam) {
+      router.push(`/exam-view/${examId}`);
+    }
+  }, [showExam, router, examId]);
+
   const handleCheckboxChange = (e) => {
     setIsAgreed(e.target.checked);
   };
 
-  // TODO
-  if (showExam) {
-    // return <div>Hiiiiii</div>;
-    router.push(`/exam-view/${examId}`);
-  }
-
   return (
     <div className="min-h-screen w-full bg-primary-color flex justify-center">
-      <div className="flex flex-col justify-center  border rounded-lg bg-custom-dark w-[700px] h-[800px] mt-4">
-        {/* <h1 className="text-3xl text-cus-white text-center">
-          {userExam.examTitle}
-        </h1> */}
+      <div className="flex flex-col justify-center border rounded-lg bg-custom-dark w-[700px] h-[800px] mt-4">
         <div className="px-4 py-4">
-          <h2 className="text-xl  text-cus-white font-bold">Instructions</h2>
+          <h2 className="text-xl text-cus-white font-bold">Instructions</h2>
           <ul className="list-disc pl-5 py-2 text-cus-white">
             <li>This exam must be taken in full-screen mode.</li>
             <li>
