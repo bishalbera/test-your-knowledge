@@ -2,7 +2,22 @@
 
 import ExamHeader from "@/components/ExamHeader/ExamHeader";
 import Spinner from "@/components/Spinner/Spinner";
+import {
+  AlertDialog,
+  AlertDialogFooter,
+  AlertDialogHeader,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Exam, ExamQuestion, Questionchoice, User } from "@prisma/client";
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@radix-ui/react-alert-dialog";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import useSWR from "swr";
 
@@ -24,47 +39,50 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [markedForReview, setMarkedForReview] = useState<string[]>([]);
+  const [showDialog, setShowDialog] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
-  //     useEffect(() => {
-  //       const handleVisibilityChange = () => {
-  //         if (document.visibilityState === "hidden") {
-  //           alert(" Tab switched");
-  //           //TODO: Add code to submit exam
-  //         }
-  //       };
-  //       document.addEventListener("visibilitychange", handleVisibilityChange);
-  //       return () => {
-  //         document.removeEventListener("visibilitychange", handleVisibilityChange);
-  //       };
-  //     }, []);
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     if (document.visibilityState === "hidden") {
+  //       alert(" Tab switched");
+  //       //TODO: Add code to submit exam
+  //     }
+  //   };
+  //   document.addEventListener("visibilitychange", handleVisibilityChange);
+  //   return () => {
+  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+  //   };
+  // }, []);
 
-  //     useEffect(() => {
-  //       const tabId = Math.random().toString(36).substring(7);
-  //       localStorage.setItem("currentExamTab", tabId);
+  // useEffect(() => {
+  //   const tabId = Math.random().toString(36).substring(7);
+  //   localStorage.setItem("currentExamTab", tabId);
 
-  //       const checkTabs = () => {
-  //         if (localStorage.getItem("currentExamTab") !== tabId) {
-  //           alert(" Only one tab is allowed for the exam.");
-  //           window.close();
-  //         }
-  //       };
-  //       window.addEventListener("storage", checkTabs);
+  //   const checkTabs = () => {
+  //     if (localStorage.getItem("currentExamTab") !== tabId) {
+  //       alert(" Only one tab is allowed for the exam.");
+  //       window.close();
+  //     }
+  //   };
+  //   window.addEventListener("storage", checkTabs);
 
-  //       return () => {
-  //         window.removeEventListener("storage", checkTabs);
-  //         localStorage.removeItem("currentExamTab");
-  //       };
-  //     }, []);
+  //   return () => {
+  //     window.removeEventListener("storage", checkTabs);
+  //     localStorage.removeItem("currentExamTab");
+  //   };
+  // }, []);
 
-  //     useEffect(() => {
-  //       const handleBlur = () => {
-  //         alert("Minimizing or switiching windows is not allowed during the exam");
-  //       };
-  //       window.addEventListener("blur", handleBlur);
-  //       return () => {
-  //         window.removeEventListener("blur", handleBlur);
-  //       };
-  //     }, []);
+  // useEffect(() => {
+  //   const handleBlur = () => {
+  //     alert("Minimizing or switiching windows is not allowed during the exam");
+  //   };
+  //   window.addEventListener("blur", handleBlur);
+  //   return () => {
+  //     window.removeEventListener("blur", handleBlur);
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (exam) {
@@ -139,11 +157,11 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
   };
 
   const handleSubmitExam = async () => {
+    setIsSubmitting(true);
     try {
       const examId = exam?.id;
       const userId = userData?.id;
       console.log("Answers object:", answers);
-
 
       const res = await fetch("/api/submit-exam", {
         method: "POST",
@@ -154,9 +172,14 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
       if (!res.ok) {
         const errorData = await res.json();
         console.error("Failed to submit the exam", errorData.error);
+      } else {
+        router.push(`/profile/${userData?.clerkId}`)
       }
     } catch (error) {
       console.error("Error submitting the exam", error);
+    } finally {
+      setIsSubmitting(false);
+      setShowDialog(false);
     }
   };
   const handleMarkForReview = (questionId: string) => {
@@ -171,20 +194,12 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
     if (
       !exam ||
       !exam.questions ||
-      currentQuestionIndex >= exam.questions.length
+      currentQuestionIndex >= exam.questions.length - 1
     ) {
       return;
     }
-    const currentQuestion = exam.questions[currentQuestionIndex];
-    const selectedChoiceId = answers[currentQuestion.id];
 
-    if (selectedChoiceId) {
-      handleAnswer(currentQuestion.id, selectedChoiceId);
-    }
-    setCurrentQuestionIndex((prevIndex) => {
-      const newIndex = prevIndex + 1;
-      return newIndex < (exam?.questions.length || 0) ? newIndex : prevIndex;
-    });
+    setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
   };
 
   const handlePreviousQestion = () => {
@@ -304,23 +319,58 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
               >
                 Previous
               </button>
-              <button
-                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded active:scale-95 transition-transform"
-                onClick={
-                  currentQuestionIndex === exam.questions.length - 1
-                    ? handleSubmitExam
-                    : handleNextQuestion
-                }
-                // disabled={currentQuestionIndex === exam.questions.length - 1}
-              >
-                {currentQuestionIndex === exam.questions.length - 1
-                  ? "Submit"
-                  : "Next"}
-              </button>
+              {currentQuestionIndex === exam.questions.length - 1 ? (
+                <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowDialog(true)}
+                    >
+                      Submit
+                    </Button>
+                  </AlertDialogTrigger>
+                  <div className="fixed  z-50  flex items-center justify-center bg-black bg-opacity-60">
+                    <AlertDialogContent className="relative bg-white text-gray-900 rounded-lg p-6 w-full max-w-md shadow-lg">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-xl font-bold">
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="mt-2 text-sm">
+                          This action cannot be undone. Once you submit, your
+                          answers will be final.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="flex justify-end mt-4 space-x-4">
+                        <AlertDialogCancel className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+                          onClick={handleSubmitExam}
+                        >
+                          Submit
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </div>
+                </AlertDialog>
+              ) : (
+                <button
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded active:scale-95 transition-transform"
+                  onClick={handleNextQuestion}
+                >
+                  Next
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="loader"></div>
+        </div>
+      )}
     </div>
   );
 };
