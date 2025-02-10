@@ -2,20 +2,22 @@ import { FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa6";
 import { Testimonials } from "@/components/Testimonials/Testimonials";
 import { Features } from "@/components/FeatureCard/FeatureCard";
 import Hero from "@/components/Hero/Hero";
-
+import Header from "@/components/Header/Header";
+import HowExamEaseWorks from "@/components/HowItWorks/HowItWorks";
 
 export default function Home() {
-  
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-900 text-gray-300">
+      <Header />
       {/* Hero Section */}
-     <Hero />
+      <Hero />
+
+      <HowExamEaseWorks />
 
       {/* Features Section */}
-     <Features />
+      <Features />
       {/* Testimonials Carousel */}
-     <Testimonials />
+      <Testimonials />
 
       {/* Footer */}
       <footer className="bg-gray-900 text-gray-300 py-8 text-center">

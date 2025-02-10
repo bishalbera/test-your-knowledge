@@ -12,12 +12,12 @@ export const Testimonials = () => {
     {
       name: "Jane Smith",
       feedback: "I loved the real-time experience!",
-      image: "/jane.jpg",
+      image: "/dd.jpg",
     },
     {
-      name: "Ali Khan",
+      name: "Alia Khan",
       feedback: "Highly recommend this platform for students.",
-      image: "/ali.jpg",
+      image: "/dummy.jpg",
     },
   ];
 
@@ -26,7 +26,7 @@ export const Testimonials = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
-    }, 4000); // Change every 4 seconds
+    }, 2000); // Change every 4 seconds
 
     return () => clearInterval(interval);
   }, []);
