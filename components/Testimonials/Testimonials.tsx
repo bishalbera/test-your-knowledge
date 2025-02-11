@@ -26,7 +26,7 @@ export const Testimonials = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
-    }, 2000); // Change every 4 seconds
+    }, 2000); // Change every 2 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -51,7 +51,7 @@ export const Testimonials = () => {
               className="w-16 h-16 rounded-full mb-4 border-2 border-white"
             />
             <p className="text-lg text-white italic">
-              "{testimonial.feedback}"
+              {`"`}{testimonial.feedback}{`"`}
             </p>
             <h4 className="mt-2 text-white font-semibold">
               - {testimonial.name}
