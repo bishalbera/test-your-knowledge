@@ -35,6 +35,8 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
     fetcher
   );
 
+  const {data: userExam, error: userExamError} = useSWR<{scheduledDatetime: string}>(`/api/get-userexams/${examId}`, fetcher);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -85,10 +87,13 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
   // }, []);
 
   useEffect(() => {
-    if (exam) {
-      setTimeRemaining(exam.timeLimit * 60 * 1000);
+    if (exam && userExam) {
+      const scheduledDatetime = new Date(userExam.scheduledDatetime).getTime();
+      const currentTime = new Date().getTime();
+      const remainingTime = scheduledDatetime + exam.timeLimit * 60 * 1000 - currentTime;
+      setTimeRemaining(remainingTime);
     }
-  }, [exam]);
+  }, [exam, userExam]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -98,35 +103,6 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    if (examId) {
-      window.addEventListener("beforeunload", () => {
-        localStorage.setItem(
-          `exam-${examId}-remaining-time`,
-          timeRemaining.toString()
-        );
-      });
-    }
-    return () => {
-      window.removeEventListener("beforeunload", () => {
-        localStorage.setItem(
-          `exam-${examId}-remaining-time`,
-          timeRemaining.toString()
-        );
-      });
-    };
-  }, [timeRemaining, examId]);
-
-  useEffect(() => {
-    if (exam) {
-      const savedTime = localStorage.getItem(`exam-${exam.id}-remaining-time`);
-      const remainingTime =
-        savedTime && parseInt(savedTime, 10) > 0
-          ? parseInt(savedTime, 10)
-          : exam.timeLimit * 60 * 1000;
-      setTimeRemaining(remainingTime);
-    }
-  }, [exam]);
 
   const handleAnswer = async (questionId: string, selectedChoiceId: string) => {
     setAnswers((prevAnswers) => ({
