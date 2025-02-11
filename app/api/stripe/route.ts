@@ -12,31 +12,37 @@ type RequestData = {
   userId: string;
 };
 
-export const POST = async (req: NextRequest, res: NextResponse) => {
-  const { examTitle, cost, imageUrl, userId }: RequestData = await req.json();
-
-  if (!examTitle || !cost || !imageUrl || !userId) {
-    return NextResponse.json(
-      { message: "Please all fields are required" },
-      { status: 400 }
-    );
-  }
-
-  const user = await getUserFromClerkID({ clerkId: true });
-  console.log(user)
-  const origin = req.headers.get("origin");
-
+export const POST = async (req: NextRequest) => {
   try {
+    const { examTitle, cost, imageUrl, userId }: RequestData = await req.json();
+
+    if (!examTitle || !cost || !imageUrl || !userId) {
+      return NextResponse.json(
+        { message: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    const user = await getUserFromClerkID(); // Fixed incorrect parameter
+    if (!user) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    const origin =
+      req.headers.get("origin") || process.env.NEXT_PUBLIC_BASE_URL;
+
     const userExam = await getUserExam(user.id);
+    if (!userExam) {
+      return NextResponse.json(
+        { message: "User has no associated exam" },
+        { status: 404 }
+      );
+    }
 
-    const examId = userExam?.examId;
-
-    const exam = await getExam(examId!);
-
-    const examTitle = exam?.title;
-    const examCost = exam?.cost;
-
-    console.log(userExam?.imageUrl);
+    const exam = await getExam(userExam.examId);
+    if (!exam) {
+      return NextResponse.json({ message: "Exam not found" }, { status: 404 });
+    }
 
     const stripeSession: Stripe.Checkout.Session =
       await stripe.checkout.sessions.create({
@@ -46,31 +52,33 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
             price_data: {
               currency: "INR",
               product_data: {
-                name: examTitle,
-                images: [userExam?.imageUrl || "/default-image.jpg"],
+                name: exam.title,
+                images: [userExam.imageUrl || "/default-image.jpg"],
               },
-              unit_amount: examCost! * 100,
+              unit_amount: exam.cost * 100,
             },
           },
         ],
         mode: "payment",
-        success_url: `${origin}/profile/${user.clerkId}`,
+        success_url: `${origin}/profile/${user.id}`,
         cancel_url: `${origin}/cancel`,
         payment_method_types: ["card"],
         metadata: {
-
           user: user.id,
-          examCost,
-          examId,
+          examCost: exam.cost,
+          examId: exam.id,
         },
       });
 
     return NextResponse.json(stripeSession, {
       status: 200,
-      statusText: "payment session created",
+      statusText: "Payment session created",
     });
   } catch (error) {
-    console.error("payment failed", error);
-    return NextResponse.json({ message: "payment failed" }, { status: 500 });
+    console.error("Payment failed", error);
+    return NextResponse.json(
+      { message: "Payment failed", error: (error as Error).message },
+      { status: 500 }
+    );
   }
 };
