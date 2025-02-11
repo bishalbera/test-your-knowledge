@@ -7,7 +7,7 @@ export const Testimonials = () => {
     {
       name: "John Doe",
       feedback: "ExamEase made my exams so much easier!",
-      image: "/me.JPG",
+      image: "/uuu.avif",
     },
     {
       name: "Jane Smith",
