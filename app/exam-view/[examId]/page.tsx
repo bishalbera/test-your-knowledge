@@ -35,8 +35,9 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
     fetcher
   );
 
-  const {data: userExam, error: userExamError} = useSWR<{scheduledDatetime: string}>(`/api/get-userexams/${examId}`, fetcher);
-
+  const [userExam, setUserExam] = useState<{
+    scheduledDateTime: string;
+  } | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -45,64 +46,34 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  // useEffect(() => {
-  //   const handleVisibilityChange = () => {
-  //     if (document.visibilityState === "hidden") {
-  //       alert(" Tab switched");
-  //       //TODO: Add code to submit exam
-  //     }
-  //   };
-  //   document.addEventListener("visibilitychange", handleVisibilityChange);
-  //   return () => {
-  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const tabId = Math.random().toString(36).substring(7);
-  //   localStorage.setItem("currentExamTab", tabId);
-
-  //   const checkTabs = () => {
-  //     if (localStorage.getItem("currentExamTab") !== tabId) {
-  //       alert(" Only one tab is allowed for the exam.");
-  //       window.close();
-  //     }
-  //   };
-  //   window.addEventListener("storage", checkTabs);
-
-  //   return () => {
-  //     window.removeEventListener("storage", checkTabs);
-  //     localStorage.removeItem("currentExamTab");
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const handleBlur = () => {
-  //     alert("Minimizing or switiching windows is not allowed during the exam");
-  //   };
-  //   window.addEventListener("blur", handleBlur);
-  //   return () => {
-  //     window.removeEventListener("blur", handleBlur);
-  //   };
-  // }, []);
+  useEffect(() => {
+    if (userData) {
+      fetch(`/api/get-userexams/${userData?.id}`)
+        .then((res) => res.json())
+        .then((data) => setUserExam(data[0]))
+        .catch((error) => console.error("Error fetching user exam", error));
+    }
+  }, [userData]);
 
   useEffect(() => {
     if (exam && userExam) {
-      const scheduledDatetime = new Date(userExam.scheduledDatetime).getTime();
+      const scheduledDatetime = new Date(userExam.scheduledDateTime).getTime();
       const currentTime = new Date().getTime();
-      const remainingTime = scheduledDatetime + exam.timeLimit * 60 * 1000 - currentTime;
+      const remainingTime =
+        scheduledDatetime + exam.timeLimit * 60 * 1000 - currentTime;
       setTimeRemaining(remainingTime);
     }
   }, [exam, userExam]);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeRemaining((prev) => Math.max(prev - 1000, 0));
+      setTimeRemaining((prev) =>
+        prev !== null ? Math.max(prev - 1000, 0) : null
+      );
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
-
 
   const handleAnswer = async (questionId: string, selectedChoiceId: string) => {
     setAnswers((prevAnswers) => ({
@@ -149,7 +120,7 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
         const errorData = await res.json();
         console.error("Failed to submit the exam", errorData.error);
       } else {
-        router.push(`/profile/${userData?.clerkId}`)
+        router.push(`/profile/${userData?.clerkId}`);
       }
     } catch (error) {
       console.error("Error submitting the exam", error);
@@ -182,7 +153,8 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
     setCurrentQuestionIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const formatTime = (ms: number) => {
+  const formatTime = (ms: number | null) => {
+    if (ms === null) return "00:00";
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes.toString().padStart(2, "0")}:${seconds
@@ -212,10 +184,6 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
       <div className="mt-16">
         <div className="flex-grow flex">
           <div className=" w-1/4 pl-4 pr-4 bg-gray-800 text-gray-300">
-            {/* <div className="mb-4 mt-4">
-            <div className="font-semibold">Remaining Time</div>
-            <div className="text-xl font-bold">{formatTime(timeRemaining)}</div>
-          </div> */}
             <div className="mt-2 mb-2 flex-col gap-2">
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-sm text-white mb-2">
