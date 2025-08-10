@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Modal from "../Modal/Modal";
+import GlassCard from "@/components/ui/GlassCard";
 
 const ProfileBody = ({ userData }) => {
   const router = useRouter();
@@ -36,44 +37,44 @@ const ProfileBody = ({ userData }) => {
 
   return (
     <div className="grid justify-center">
-      <div className="grid grid-cols-2 gap-4 w-[600px] p-4">
-        <div
-          className="bg-[#13678A] cursor-pointer rounded-lg p-4 place-items-center"
+      <div className="grid w-[600px] grid-cols-2 gap-4 p-4">
+        <GlassCard
+          className="cursor-pointer p-6 text-white transition-all hover:translate-y-[-2px]"
           onClick={handleOnClick}
         >
           <div className="text-center">
-            <div className="text-purple-500 mb-2">📄</div>
-            <h3 className="text-gray/70">Exams</h3>
+            <div className="mb-2 text-purple-400">📄</div>
+            <h3 className="text-slate-300/80">Exams</h3>
             <p className="text-2xl font-bold">{userData.exams}</p>
           </div>
-        </div>
-        <div
-          className="bg-[#13678A] cursor-pointer rounded-lg p-4 place-items-center"
+        </GlassCard>
+        <GlassCard
+          className="cursor-pointer p-6 text-white transition-all hover:translate-y-[-2px]"
           onClick={handleScoreClick}
         >
           <div className="text-center">
-            <div className="text-text-color mb=2">💯</div>
-            <h3 className="text-gray/70">Score</h3>
+            <div className="mb=2 text-fuchsia-400">💯</div>
+            <h3 className="text-slate-300/80">Score</h3>
             <p className="text-2xl font-bold">{userData.Score}</p>
           </div>
-        </div>
+        </GlassCard>
       </div>
       <Modal isOpen={isOpen} closeModal={closeModal}>
-        <h2 className="text-xl font-bold mb-4">Exam Scores</h2>
-        <table className="min-w-full bg-white">
-          <thead>
+        <h2 className="mb-4 text-xl font-bold">Exam Scores</h2>
+        <table className="min-w-full overflow-hidden rounded-lg border border-white/10 bg-white/5 text-slate-200">
+          <thead className="bg-white/10">
             <tr>
-              <th className="py-2 px-4 border-b">Exam</th>
-              <th className="py-2 px-4 border-b">Score</th>
-              <th className="py-2 px-4 border-b">Date Submitted</th>
+              <th className="border-b border-white/10 py-2 px-4 text-left">Exam</th>
+              <th className="border-b border-white/10 py-2 px-4 text-left">Score</th>
+              <th className="border-b border-white/10 py-2 px-4 text-left">Date Submitted</th>
             </tr>
           </thead>
           <tbody>
             {examData.map((exam) => (
               <tr key={exam.id}>
-                <td className="py-2 px-4 border-b">{exam.examTitle}</td>
-                <td className="py-2 px-4 border-b">{exam.Score}</td>
-                <td className="py-2 px-4 border-b">
+                <td className="border-b border-white/10 py-2 px-4">{exam.examTitle}</td>
+                <td className="border-b border-white/10 py-2 px-4">{exam.Score}</td>
+                <td className="border-b border-white/10 py-2 px-4">
                   {new Date(exam.dateSubmitted).toLocaleDateString()}
                 </td>
               </tr>

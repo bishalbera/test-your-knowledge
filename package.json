@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
+    "build": "ENV_FILE=.env next build",
+    "start": "ENV_FILE=.env next start",
     "lint": "next lint",
     "postinstall": "npx prisma generate"
   },

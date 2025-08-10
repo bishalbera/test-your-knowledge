@@ -24,33 +24,27 @@ const ProfilePage = async (props: { params: Promise<{ id: string }> }) => {
   const isAdmin = userData?.email == process.env.ADMIN_EMAIL;
 
   return (
-    <div className=" bg-primary-color text-white min-h-screen w-screen">
-      <nav>
-        <ul className="flex flex-row   justify-between  p-4">
-          <li className="my-4">
-            <h1 className="text-3xl font-mono text-text-color">My Profile</h1>
+    <div className="min-h-screen w-screen text-white">
+      <nav className="border-b border-white/10 bg-white/5 backdrop-blur">
+        <ul className="mx-auto flex max-w-7xl flex-row justify-between p-4">
+          <li className="my-2">
+            <h1 className="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-3xl font-bold text-transparent">My Profile</h1>
           </li>
-          <li className="font-serif ">
-            <Link href="/">Home</Link>
-          </li>
-          <li className="font-serif">
-            <Link href="/available-exams">Exams</Link>
-          </li>
-          <li className="font-serif">
-            <Link href="/profile">Profile</Link>
-          </li>
-          <li>
+          <li className="flex items-center gap-6 text-slate-200/80">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <Link href="/available-exams" className="hover:text-white transition-colors">Exams</Link>
+            <Link href="/profile" className="hover:text-white transition-colors">Profile</Link>
             <UserButton />
           </li>
         </ul>
       </nav>
-      <div className="my-16 flex justify-center h-[100px]">
+      <div className="my-12 flex justify-center">
         <Image
           src={userData?.imageUrl ?? ""}
           alt="Profile"
-          width={100}
-          height={100}
-          className=" rounded-full object-cover"
+          width={120}
+          height={120}
+          className="rounded-full border border-white/10 object-cover"
         />
       </div>
       <p className="flex justify-center text-lg font-bold">{userData?.name}</p>

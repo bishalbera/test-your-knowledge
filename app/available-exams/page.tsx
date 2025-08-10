@@ -18,20 +18,23 @@ const ActiveExams = () => {
   if (!exams) return <Spinner />;
 
   return (
-    <div className="min-h-screen w-full bg-primary-color">
-      <h1 className="font-mono text-text-color text-3xl p-4">
-        Available Exams
-      </h1>
-      <div className=" w-full grid grid-cols-4  gap-4 p-4">
-        {exams.map((exam) => (
-          <ExamCard
-            key={exam.id}
-            exam={exam}
-            onButtonClick={(id) =>
-              router.push(`/available-exams/${id}/schedule-exam`)
-            }
-          />
-        ))}
+    <div className="min-h-screen w-full">
+      <div className="mx-auto max-w-7xl px-4 py-20">
+        <h1 className="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent text-3xl md:text-4xl font-bold">
+          Available Exams
+        </h1>
+        <p className="mt-2 text-slate-300/80">Pick an exam to schedule your slot.</p>
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {exams.map((exam) => (
+            <ExamCard
+              key={exam.id}
+              exam={exam}
+              onButtonClick={(id) =>
+                router.push(`/available-exams/${id}/schedule-exam`)
+              }
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

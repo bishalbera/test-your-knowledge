@@ -6,6 +6,8 @@ import { getStripe } from "@/utils/stripe";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState, use } from "react";
+import { Button } from "@/components/ui/button";
+import GlassCard from "@/components/ui/GlassCard";
 
 const ScheduleExam = (props: { params: Promise<{ id: string }> }) => {
   const params = use(props.params);
@@ -138,49 +140,41 @@ const ScheduleExam = (props: { params: Promise<{ id: string }> }) => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-primary-color text-white flex flex-col justify-center p-4 items-center">
-      <h1 className="text-cus-white text-3xl p-2">Schedule Your Exam</h1>
-      <div className="w-[700px] h-[800px] bg-custom-dark flex flex-col  rounded-lg border mt-4 p-4">
+    <div className="min-h-screen w-full text-white flex flex-col justify-center p-4 items-center">
+      <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">Schedule Your Exam</h1>
+      <GlassCard className="w-full max-w-[760px] min-h-[720px] mt-6 p-6 flex flex-col shadow-xl">
         <div className="flex justify-between items-center mb-8">
           <div className="flex-1 text-center">
             <div
               className={`w-8 h-8 ${
-                currentStep >= 1 ? "bg-green-500" : "bg-gray-500"
+                currentStep >= 1 ? "bg-emerald-500" : "bg-white/20"
               } text-white rounded-full flex items-center justify-center mx-auto`}
             >
               1
             </div>
-            <p className="text-sm mt-2">Exam Detail</p>
+            <p className="text-sm mt-2 text-slate-300/80">Exam Detail</p>
           </div>
-          <div
-            className={`flex-1 h-1 ${
-              currentStep >= 2 ? "bg-green-500" : "bg-gray-500"
-            }`}
-          ></div>
+          <div className={`flex-1 h-1 ${currentStep >= 2 ? "bg-emerald-500" : "bg-white/20"}`}></div>
           <div className="flex-1 text-center">
             <div
               className={`w-8 h-8 rounded-full text-white ${
-                currentStep >= 2 ? "bg-green-500" : "bg-gray-500"
+                currentStep >= 2 ? "bg-emerald-500" : "bg-white/20"
               } flex justify-center items-center mx-auto`}
             >
               2
             </div>
-            <p className="text-sm mt-2 ">Time & Date</p>
+            <p className="text-sm mt-2 text-slate-300/80">Time & Date</p>
           </div>
-          <div
-            className={`flex-1 h-1 ${
-              currentStep >= 3 ? "bg-green-500" : "bg-gray-500"
-            }`}
-          ></div>
+          <div className={`flex-1 h-1 ${currentStep >= 3 ? "bg-emerald-500" : "bg-white/20"}`}></div>
           <div className="flex-1 text-center">
             <div
               className={`w-8 h-8 ${
-                currentStep >= 3 ? "bg-green-500" : "bg-gray-500"
+                currentStep >= 3 ? "bg-emerald-500" : "bg-white/20"
               } text-white rounded-full flex items-center justify-center mx-auto`}
             >
               3
             </div>
-            <p className="text-sm mt-2">Payment</p>
+            <p className="text-sm mt-2 text-slate-300/80">Payment</p>
           </div>
         </div>
         {currentStep === 2 && (
@@ -190,48 +184,43 @@ const ScheduleExam = (props: { params: Promise<{ id: string }> }) => {
         )}
         {currentStep === 3 && (
           <div className="my-4 text-center">
-            <h2 className="font-bold mb-4 text-xl">{examDetails?.title}</h2>
+            <h2 className="font-bold mb-4 text-xl text-white">{examDetails?.title}</h2>
             <img
               src={examDetails?.imageUrl || "/default-image.jpg"}
-              width={40}
-              height={40}
-              className="w-40 h-40 mx-auto mb-4"
+              width={160}
+              height={160}
+              className="w-40 h-40 mx-auto mb-4 rounded-lg object-cover border border-white/10"
               alt="exam-image"
             />
-            <p className="text-lg mb-4 font-[700]">
+            <p className="text-lg mb-4 font-semibold text-slate-200">
               Cost: INR {examDetails?.cost}
             </p>
-            <button
-              className="p-2 bg-green-500 hover:bg-green-600 text-cus-white rounded-lg font-medium"
-              onClick={handlePayClick}
-            >
+            <Button variant="gradient" className="px-6 py-2" onClick={handlePayClick}>
               Proceed to Payment
-            </button>
+            </Button>
           </div>
         )}
         <div className="mt-auto flex justify-between">
-          <button
+          <Button
             onClick={previousStep}
-            className={`p-2 bg-cus-white text-black rounded-lg ${
-              currentStep === 1 ? "opacity-50 cursor-not-allowed" : ""
-            } ${currentStep === 3 ? "hover:bg-cus-white/70" : ""}`}
+            variant="glass"
+            className={`${currentStep === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
             disabled={currentStep === 1}
           >
             Previous
-          </button>
-          <button
-            className={`p-2 bg-cus-white text-black rounded-lg ${
-              currentStep === 3 || !selectedDateTime
-                ? "opacity-50 cursor-not-allowed"
-                : ""
+          </Button>
+          <Button
+            variant="gradient"
+            className={`${
+              currentStep === 3 || !selectedDateTime ? "opacity-50 cursor-not-allowed" : ""
             }`}
             onClick={nextStep}
             disabled={!selectedDateTime}
           >
             Next
-          </button>
+          </Button>
         </div>
-      </div>
+      </GlassCard>
     </div>
   );
 };

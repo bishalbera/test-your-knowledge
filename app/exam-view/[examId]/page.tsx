@@ -20,6 +20,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import useSWR from "swr";
+import { Button } from "@/components/ui/button";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -175,45 +176,45 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
   const markedForReviewCount = markedForReview.length;
 
   return (
-    <div className="flex flex-col h-screen bg-gray-900 text-gray-300">
+    <div className="flex h-screen flex-col">
       <ExamHeader
         exam={exam}
         userData={userData}
         timeRemaining={formatTime(timeRemaining)}
       />
       <div className="mt-16">
-        <div className="flex-grow flex">
-          <div className=" w-1/4 pl-4 pr-4 bg-gray-800 text-gray-300">
-            <div className="mt-2 mb-2 flex-col gap-2">
+        <div className="flex flex-grow">
+          <div className="w-1/4 bg-white/5 px-4 text-slate-200">
+            <div className="mb-4 mt-2 flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-sm text-white mb-2">
+                <div className="mb-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-sm text-white">
                   {notVisitedQuestions}
                 </div>
-                <span className="text-gray-300">Not Visited</span>
+                <span className="text-slate-300">Not Visited</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-purple-500  flex items-center justify-center text-sm text-white mb-2">
+                <div className="mb-2 flex h-6 w-6 items-center justify-center rounded-full bg-fuchsia-500 text-sm text-white">
                   {markedForReviewCount}
                 </div>
-                <span className="text-gray-300">Marked for Review</span>
+                <span className="text-slate-300">Marked for Review</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full flex items-center justify-center bg-red-500 text-sm text-white mb-2">
+                <div className="mb-2 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-sm text-white">
                   {notAnsweredQuestions}
                 </div>
-                <span className="text-gray-300">Not Answered</span>
+                <span className="text-slate-300">Not Answered</span>
               </div>
             </div>
-            <div>
+            <div className="flex flex-wrap gap-2">
               {exam.questions.map((question, index) => (
                 <button
                   key={question.id}
-                  className={`w-10 h-10 rounded-full border ${
+                  className={`h-10 w-10 rounded-full border border-white/10 ${
                     answers[question.id]
-                      ? "bg-green-500"
+                      ? "bg-emerald-500"
                       : markedForReview.includes(question.id)
-                      ? "bg-purple-500"
-                      : "bg-gray-700"
+                      ? "bg-fuchsia-500"
+                      : "bg-white/10"
                   }`}
                   onClick={() => setCurrentQuestionIndex(index)}
                 >
@@ -222,12 +223,11 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
               ))}
             </div>
           </div>
-          <div className="flex-grow pl-6 pr-6 bg-gray-900 text-gray-200">
-            <div className="text-lg font-semibold text-gray-100">
+          <div className="flex-grow px-6">
+            <div className="text-lg font-semibold text-white">
               Question {currentQuestionIndex + 1}:
             </div>
-            <div className="text-gray-300 mb-4 font-mono font-semibold">
-              {" "}
+            <div className="mb-4 font-mono font-semibold text-slate-200">
               {currentQuestion?.questionText}
             </div>
             <div className="space-y-4">
@@ -239,57 +239,56 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
                     name={`question-${currentQuestion.id}`}
                     checked={answers[currentQuestion.id] === choice.id}
                     onChange={() => handleAnswer(currentQuestion.id, choice.id)}
-                    className="mr-2 accent-blue-500"
+                    className="mr-2 accent-indigo-500"
                   />
-                  <label htmlFor={choice.id} className="text-gray-200">
+                  <label htmlFor={choice.id} className="text-slate-200">
                     {choice.choiceAnswer}
                   </label>
                 </div>
               ))}
             </div>
-            <div className="flex space-x-4 mt-6">
-              <button
-                className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded"
+            <div className="mt-6 flex space-x-4">
+              <Button
+                variant="gradient"
+                className="px-4 py-2"
                 onClick={() => handleMarkForReview(currentQuestion.id)}
               >
                 {markedForReview.includes(currentQuestion.id)
                   ? "Unmark for Review"
                   : "Mark for Review"}
-              </button>
-              <button
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-transform active:scale-95"
+              </Button>
+              <Button
+                variant="glass"
+                className="px-4 py-2"
                 onClick={handlePreviousQestion}
                 disabled={currentQuestionIndex === 0}
               >
                 Previous
-              </button>
+              </Button>
               {currentQuestionIndex === exam.questions.length - 1 ? (
                 <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
                   <AlertDialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowDialog(true)}
-                    >
+                    <Button variant="outline" onClick={() => setShowDialog(true)}>
                       Submit
                     </Button>
                   </AlertDialogTrigger>
-                  <div className="fixed  z-50  flex items-center justify-center bg-black bg-opacity-60">
-                    <AlertDialogContent className="relative bg-white text-gray-900 rounded-lg p-6 w-full max-w-md shadow-lg">
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                    <AlertDialogContent className="relative max-w-md w-full rounded-lg border border-white/10 bg-white/5 p-6 text-white shadow-xl backdrop-blur">
                       <AlertDialogHeader>
                         <AlertDialogTitle className="text-xl font-bold">
                           Are you absolutely sure?
                         </AlertDialogTitle>
-                        <AlertDialogDescription className="mt-2 text-sm">
+                        <AlertDialogDescription className="mt-2 text-sm text-slate-300">
                           This action cannot be undone. Once you submit, your
                           answers will be final.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
-                      <AlertDialogFooter className="flex justify-end mt-4 space-x-4">
-                        <AlertDialogCancel className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md">
+                      <AlertDialogFooter className="mt-4 flex justify-end space-x-4">
+                        <AlertDialogCancel className="rounded-md border border-white/20 bg-white/5 px-4 py-2 text-white hover:bg-white/10">
                           Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction
-                          className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md"
+                          className="rounded-md bg-rose-500 px-4 py-2 text-white hover:bg-rose-600"
                           onClick={handleSubmitExam}
                         >
                           Submit
@@ -299,19 +298,16 @@ const ExamView = (props: { params: Promise<{ examId: string }> }) => {
                   </div>
                 </AlertDialog>
               ) : (
-                <button
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded active:scale-95 transition-transform"
-                  onClick={handleNextQuestion}
-                >
+                <Button variant="gradient" className="px-4 py-2" onClick={handleNextQuestion}>
                   Next
-                </button>
+                </Button>
               )}
             </div>
           </div>
         </div>
       </div>
       {isSubmitting && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
           <div className="loader"></div>
         </div>
       )}

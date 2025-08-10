@@ -1,0 +1,55 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_REGISTRY = 'docker.io'
+        DOCKER_HUB_USERNAME = 'your-dockerhub-username'
+        IMAGE_NAME = "${env.DOCKER_HUB_USERNAME}/test-your-knowledge"
+        IMAGE_TAG = "${env.BUILD_ID}"
+    }
+
+    stages {
+        stage('Clone repo') {
+            steps {
+                git 'https://github.com/bishalbera/test-your-knowledge'
+            }
+        }
+
+        stage('Build Docker image') {
+            steps {
+                script {
+                    docker.withRegistry(env.DOCKER_REGISTRY, 'dockerhub_credentials') {
+                        def dockerImage = docker.build(IMAGE_NAME, ".")
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker image') {
+            steps {
+                script {
+                    docker.withRegistry(env.DOCKER_REGISTRY, 'dockerhub_credentials') {
+                        docker.image(IMAGE_NAME).push(IMAGE_TAG)
+                        docker.image(IMAGE_NAME).push('latest')
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'docker-compose down'
+                sh 'docker-compose up -d'
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Clean up old images
+                sh "docker rmi -f $(docker images -f 'dangling=true' -q) || true"
+            }
+        }
+    }
+}

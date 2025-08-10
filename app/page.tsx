@@ -1,33 +1,28 @@
-import { FaFacebook, FaLinkedin, FaTwitter } from "react-icons/fa6";
 import { Testimonials } from "@/components/Testimonials/Testimonials";
 import { Features } from "@/components/FeatureCard/FeatureCard";
 import Hero from "@/components/Hero/Hero";
 import Header from "@/components/Header/Header";
 import HowExamEaseWorks from "@/components/HowItWorks/HowItWorks";
+import Footer from "@/components/Footer/Footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-900 text-gray-300">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      {/* Hero Section */}
-      <Hero />
+      <main className="flex-1 reveal-fade-in">
+        {/* Hero Section */}
+        <Hero />
 
-      <HowExamEaseWorks />
+        {/* How it Works */}
+        <HowExamEaseWorks />
 
-      {/* Features Section */}
-      <Features />
-      {/* Testimonials Carousel */}
-      <Testimonials />
+        {/* Features Section */}
+        <Features />
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-8 text-center">
-        <p>© 2024 ExamEase. All rights reserved.</p>
-        <div className="flex justify-center gap-4 mt-4">
-          <FaFacebook className="text-blue-600 hover:text-white" size={24} />
-          <FaTwitter className="text-blue-400 hover:text-white" size={24} />
-          <FaLinkedin className="text-blue-700 hover:text-white" size={24} />
-        </div>
-      </footer>
+        {/* Testimonials */}
+        <Testimonials />
+      </main>
+      <Footer />
     </div>
   );
 }

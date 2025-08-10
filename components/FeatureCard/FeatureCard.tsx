@@ -1,48 +1,53 @@
 import { FaShieldAlt } from "react-icons/fa";
 import { FaRegClock, FaMoneyBillWave, FaChartLine } from "react-icons/fa6";
+import GlassCard from "@/components/ui/GlassCard";
 
 export function Features() {
   const features = [
     {
       title: "Seamless Exam Scheduling",
       description: "Schedule exams effortlessly.",
-      icon: <FaRegClock size={40} className="text-blue-500" />,
+      icon: <FaRegClock size={40} className="text-indigo-400" />,
     },
     {
       title: "Secure Online Payments",
       description: "Make secure transactions.",
-      icon: <FaMoneyBillWave size={40} className="text-green-500" />,
+      icon: <FaMoneyBillWave size={40} className="text-emerald-400" />,
     },
     {
       title: "Real-Time Exam Experience",
       description: "Smooth and reliable exams.",
-      icon: <FaShieldAlt size={40} className="text-red-500" />,
+      icon: <FaShieldAlt size={40} className="text-rose-400" />,
     },
     {
       title: "Instant Results & Analytics",
       description: "Immediate feedback and insights.",
-      icon: <FaChartLine size={40} className="text-purple-500" />,
+      icon: <FaChartLine size={40} className="text-fuchsia-400" />,
     },
   ];
 
   return (
-    <section className="py-16 bg-gray-100">
-      <div className="container mx-auto text-center">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8 animate-fadeIn">
+    <section className="relative py-20">
+      <div className="mx-auto max-w-7xl px-6 text-center">
+        <h2 className="mb-12 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
           Why Choose Us?
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {features.map((feature, index) => (
-            <div
-              key={index}
-              className="relative bg-white shadow-lg rounded-2xl overflow-hidden p-6 flex flex-col items-center text-center space-y-4 transition-transform duration-300 hover:scale-105 hover:shadow-2xl animate-slideIn"
-            >
-              <div className="bg-gray-100 p-4 rounded-full">{feature.icon}</div>
-              <h3 className="text-xl font-semibold text-gray-700">
+            <GlassCard key={index} className="group relative overflow-hidden p-6 text-left transition-all hover:translate-y-[-2px]">
+              <div className="mb-4 inline-flex rounded-full bg-white/10 p-4">
+                {feature.icon}
+              </div>
+              <h3 className="text-lg font-semibold text-white">
                 {feature.title}
               </h3>
-              <p className="text-gray-600">{feature.description}</p>
-            </div>
+              <p className="mt-2 text-sm text-slate-300/80">
+                {feature.description}
+              </p>
+              <div className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-indigo-500/20 to-fuchsia-500/20 blur-xl" />
+              </div>
+            </GlassCard>
           ))}
         </div>
       </div>

@@ -77,20 +77,22 @@ const ScheduledExam = () => {
   const filteredExams = userExams.filter((exam) => exam.scheduledDateTime);
 
   return (
-    <div className="min-h-screen mx-auto p-4 bg-primary-color">
-      <h1 className="text-cus-white text-3xl p-4 font-mono">
-        My Scheduled Exams
-      </h1>
-      <div className="flex justify-center items-center min-h-[70vh]">
-        <div className="grid grid-cols-1 gap-10">
-          {filteredExams.map((exam) => (
-            <ScheduledExamCard
-              key={exam.id}
-              exam={exam}
-              timeRemaining={timeRemaining[exam.examId]}
-              isClickable={timeRemaining[exam.examId]?.minutes <= 3}
-            />
-          ))}
+    <div className="min-h-screen mx-auto p-4">
+      <div className="mx-auto max-w-7xl px-2">
+        <h1 className="p-4 text-3xl font-bold text-transparent bg-gradient-to-r from-white to-slate-300 bg-clip-text">
+          My Scheduled Exams
+        </h1>
+        <div className="flex min-h-[70vh] items-center justify-center">
+          <div className="grid grid-cols-1 gap-10">
+            {filteredExams.map((exam) => (
+              <ScheduledExamCard
+                key={exam.id}
+                exam={exam}
+                timeRemaining={timeRemaining[exam.examId]}
+                isClickable={timeRemaining[exam.examId]?.minutes <= 3}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

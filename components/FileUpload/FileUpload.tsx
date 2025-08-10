@@ -38,10 +38,11 @@ const FileUpload = () => {
         style={{ display: "none" }}
       />
       <button
+        aria-label="Upload exam file"
         onClick={handleOnClick}
-        className="bg-button-color text-white border border-white fixed bottom-4 right-4 p-4 rounded-full shadow-lg hover:bg-button-hover-color focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:bg-blue-700"
+        className="fixed bottom-4 right-4 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 p-4 text-white shadow-lg shadow-indigo-500/20 transition-all hover:translate-y-[-1px] hover:shadow-fuchsia-500/30"
       >
-        <FaPlus className=" h-6 w-6" />
+        <FaPlus className="h-6 w-6" />
       </button>
     </>
   );

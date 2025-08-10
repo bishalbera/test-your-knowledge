@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
+import GlassCard from "@/components/ui/GlassCard";
 
 const Instruction = (props: {
   params: Promise<{ userId: string; examId: string }>;
@@ -52,11 +53,11 @@ const Instruction = (props: {
   };
 
   return (
-    <div className="min-h-screen w-full bg-primary-color flex justify-center">
-      <div className="flex flex-col justify-center border rounded-lg bg-custom-dark w-[700px] h-[800px] mt-4">
-        <div className="px-4 py-4">
-          <h2 className="text-xl text-cus-white font-bold">Instructions</h2>
-          <ul className="list-disc pl-5 py-2 text-cus-white">
+    <div className="min-h-screen w-full flex justify-center px-4">
+      <GlassCard className="mt-6 flex h-[800px] w-[700px] flex-col justify-center">
+        <div className="px-6 py-6">
+          <h2 className="text-xl font-bold text-white">Instructions</h2>
+          <ul className="list-disc pl-5 py-2 text-slate-200">
             <li>This exam must be taken in full-screen mode.</li>
             <li>
               You will be prompted to enter full-screen mode before the exam
@@ -84,30 +85,28 @@ const Instruction = (props: {
             </li>
           </ul>
         </div>
-        <div className="mt-4 flex flex-col items-center">
-          <label className="flex items-center text-cus-white">
+        <div className="mt-4 flex flex-col items-center gap-2">
+          <label className="flex items-center text-slate-200">
             <input
               type="checkbox"
               checked={isAgreed}
               onChange={handleCheckboxChange}
               disabled={timeRemaining > 180000}
-              className="mr-2"
+              className="mr-2 accent-indigo-500"
             />
             I have read all the instructions
           </label>
           {timeRemaining <= 0 && isAgreed ? (
-            <p className="bg-custom-dark text-white text-center">
-              Redirecting to exam..
-            </p>
+            <p className="text-center text-slate-200">Redirecting to exam..</p>
           ) : (
-            <p className="bg-custom-dark text-white text-center">
+            <p className="text-center text-slate-200">
               {timeRemaining > 0
                 ? "Waiting for exam start time..."
                 : "Exam has started"}
             </p>
           )}
         </div>
-      </div>
+      </GlassCard>
     </div>
   );
 };

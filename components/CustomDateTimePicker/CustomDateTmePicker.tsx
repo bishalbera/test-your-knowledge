@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import GlassCard from "@/components/ui/GlassCard";
 
 type Value = Date | null;
 
@@ -42,23 +43,23 @@ const CustomDateTimePicker = ({
   }, [selectedDate, selectedTime]);
 
   return (
-    <div className="p-4 bg-custom-dark rounded-lg w-full">
-      <h2 className="text-cus-white text-sm mb-4">Select Date</h2>
+    <GlassCard className="w-full p-4">
+      <h2 className="mb-2 text-sm text-slate-300/80">Select Date</h2>
       <Calendar
         onChange={handleDateChange}
         value={selectedDate}
         className="calendar-custom"
       />
       <div className="mt-4">
-        <h3 className="text-cus-white text-sm">Select Time Slot</h3>
+        <h3 className="text-sm text-slate-300/80">Select Time Slot</h3>
         <input
           type="time"
-          className="mt-2 p-2 bg-white text-black rounded"
+          className="mt-2 rounded bg-white/10 px-3 py-2 text-white placeholder:text-slate-400 outline-none ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-indigo-400"
           value={selectedTime || ""}
           onChange={handleTimeChange}
         />
       </div>
-    </div>
+    </GlassCard>
   );
 };
 export default CustomDateTimePicker;

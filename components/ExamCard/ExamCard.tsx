@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Exam } from "@prisma/client";
+import { Button } from "@/components/ui/button";
 
 interface ExamCardProps {
   exam: Exam;
@@ -10,19 +11,21 @@ interface ExamCardProps {
 
 const ExamCard: React.FC<ExamCardProps> = ({ exam, onButtonClick }) => {
   return (
-    <div className="p-4 bg-custom-dark rounded-[1.6rem] border border-white-transparent shadow-sm grid grid-rows-subgrid row-span-6">
-      <h2 className="text-xl font-mono text-cus-white">{exam.title}</h2>
-      <p className="text-cus-white font-mono">{exam.timeLimit} minutes</p>
-      <p className="text-cus-white text-3xl font-[700] font-mono">
-        INR {exam.cost}
-      </p>
-      <p className="text-cus-white font-mono">{exam.description}</p>
-      <button
+    <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 shadow-lg backdrop-blur transition-all hover:translate-y-[-2px] hover:bg-white/10">
+      <h2 className="text-xl font-semibold text-white">{exam.title}</h2>
+      <p className="mt-1 text-slate-300/80">{exam.timeLimit} minutes</p>
+      <p className="mt-4 text-3xl font-bold text-slate-100">INR {exam.cost}</p>
+      <p className="mt-2 line-clamp-2 text-slate-300/80">{exam.description}</p>
+      <Button
         onClick={() => onButtonClick(exam.id)}
-        className=" bg-cus-white text-black px-4 py-2 rounded font-mono"
+        variant="gradient"
+        className="mt-6 px-4 py-2 text-sm"
       >
-        Take Exam
-      </button>
+        Schedule
+      </Button>
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity group-hover:opacity-100">
+        <div className="absolute -inset-px rounded-2xl bg-gradient-to-r from-indigo-500/20 to-fuchsia-500/20 blur-xl" />
+      </div>
     </div>
   );
 };
