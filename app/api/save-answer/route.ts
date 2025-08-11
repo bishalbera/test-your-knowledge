@@ -2,6 +2,9 @@ import { getUserFromClerkID } from "@/utils/auth";
 import { prisma } from "@/utils/db";
 import { NextRequest } from "next/server";
 
+// Force dynamic for API route using auth
+export const dynamic = 'force-dynamic';
+
 export const POST = async (req: NextRequest) => {
         try {
 

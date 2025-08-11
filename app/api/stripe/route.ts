@@ -3,6 +3,9 @@ import { getExam, getUserExam } from "@/utils/examUtils";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
+// Force dynamic for API route using auth
+export const dynamic = 'force-dynamic';
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 type RequestData = {

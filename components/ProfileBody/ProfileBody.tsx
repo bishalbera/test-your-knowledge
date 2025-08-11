@@ -1,14 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "../Modal/Modal";
 import GlassCard from "@/components/ui/GlassCard";
 
 const ProfileBody = ({ userData }) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [examData, setExamData] = useState([]);
 
   const handleOnClick = () => {
     router.push(
@@ -24,15 +23,6 @@ const ProfileBody = ({ userData }) => {
     setIsOpen(false);
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      fetch(`/api/get-userexams/${userData.id}`)
-        .then((res) => res.json())
-        .then((data) => setExamData(data))
-        .catch((err) => console.log("Error fetching exam data", err));
-    }
-  }, [isOpen, userData.id]);
-
   if (!userData) return <p>No user data found.</p>;
 
   return (
@@ -45,7 +35,7 @@ const ProfileBody = ({ userData }) => {
           <div className="text-center">
             <div className="mb-2 text-purple-400">📄</div>
             <h3 className="text-slate-300/80">Exams</h3>
-            <p className="text-2xl font-bold">{userData.exams}</p>
+            <p className="text-2xl font-bold">{userData.exams.length}</p>
           </div>
         </GlassCard>
         <GlassCard
@@ -55,7 +45,7 @@ const ProfileBody = ({ userData }) => {
           <div className="text-center">
             <div className="mb=2 text-fuchsia-400">💯</div>
             <h3 className="text-slate-300/80">Score</h3>
-            <p className="text-2xl font-bold">{userData.Score}</p>
+            <p className="text-2xl font-bold">View Scores</p>
           </div>
         </GlassCard>
       </div>
@@ -70,7 +60,7 @@ const ProfileBody = ({ userData }) => {
             </tr>
           </thead>
           <tbody>
-            {examData.map((exam) => (
+            {userData.exams.map((exam) => (
               <tr key={exam.id}>
                 <td className="border-b border-white/10 py-2 px-4">{exam.examTitle}</td>
                 <td className="border-b border-white/10 py-2 px-4">{exam.Score}</td>

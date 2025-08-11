@@ -3,6 +3,9 @@ import { prisma } from "@/utils/db";
 import { getExam } from "@/utils/examUtils";
 import { NextRequest, NextResponse } from "next/server";
 
+// Force dynamic for API route using auth
+export const dynamic = 'force-dynamic';
+
 export const POST = async (req: NextRequest, props: { params: Promise<{ id: string }> }) => {
   const params = await props.params;
   try {

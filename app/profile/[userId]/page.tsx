@@ -1,27 +1,48 @@
 import FileUpload from "@/components/FileUpload/FileUpload";
 import ProfileBody from "@/components/ProfileBody/ProfileBody";
-import { prisma, addUserToDb } from "@/utils/db";
-import { UserButton } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
+import { UserButton, useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-const ProfilePage = async (props: { params: Promise<{ id: string }> }) => {
-  const params = await props.params;
-  await addUserToDb();
+const ProfilePage = () => {
+  const { user } = useUser();
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/get-user-profile");
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const data = await response.json();
+        setUserData(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const cUser = await currentUser();
-   if (!cUser) {
-     return <p className="text-center text-red-500">User not found.</p>;
-   }
-  const userData = await prisma.user.findUnique({
-    where: {
-      clerkId: cUser.id,
-    },
-  });
+    fetchUserData();
+  }, []);
 
-  const isAdmin = userData?.email == process.env.ADMIN_EMAIL;
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
+
+  if (!user) {
+    return <p className="text-center text-red-500">User not found.</p>;
+  }
+
+  const isAdmin = user?.emailAddresses[0].emailAddress == process.env.ADMIN_EMAIL;
 
   return (
     <div className="min-h-screen w-screen text-white">
@@ -40,14 +61,14 @@ const ProfilePage = async (props: { params: Promise<{ id: string }> }) => {
       </nav>
       <div className="my-12 flex justify-center">
         <Image
-          src={userData?.imageUrl ?? ""}
+          src={user?.imageUrl ?? ""}
           alt="Profile"
           width={120}
           height={120}
           className="rounded-full border border-white/10 object-cover"
         />
       </div>
-      <p className="flex justify-center text-lg font-bold">{userData?.name}</p>
+      <p className="flex justify-center text-lg font-bold">{user?.fullName}</p>
       <ProfileBody userData={userData} />
       {isAdmin && <FileUpload />}
     </div>

@@ -2,6 +2,9 @@ import { prisma } from "@/utils/db";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+// Force dynamic for API route using currentUser
+export const dynamic = 'force-dynamic';
+
 export const GET = async () => {
   try {
     const cUser = await currentUser();
