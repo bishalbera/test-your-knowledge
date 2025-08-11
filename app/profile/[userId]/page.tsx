@@ -1,3 +1,5 @@
+'use client';
+
 import FileUpload from "@/components/FileUpload/FileUpload";
 import ProfileBody from "@/components/ProfileBody/ProfileBody";
 import { UserButton, useUser } from "@clerk/nextjs";
