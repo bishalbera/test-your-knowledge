@@ -7,7 +7,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { Exam, ExamQuestion, Questionchoice, User } from "@prisma/client";
 import {
   AlertDialogAction,
