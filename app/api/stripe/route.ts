@@ -1,4 +1,4 @@
-import { getUserFromClerkID } from "@/utils/auth";
+import { getUserFromClerkID, UnauthorizedError } from "@/utils/auth";
 import { getExam, getUserExam } from "@/utils/examUtils";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -26,10 +26,7 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    const user = await getUserFromClerkID(); // Fixed incorrect parameter
-    if (!user) {
-      return NextResponse.json({ message: "User not found" }, { status: 404 });
-    }
+    const user = await getUserFromClerkID(); // Validates auth
 
     const origin =
       req.headers.get("origin") || process.env.NEXT_PUBLIC_BASE_URL;
@@ -79,6 +76,9 @@ export const POST = async (req: NextRequest) => {
     });
   } catch (error) {
     console.error("Payment failed", error);
+    if (error instanceof UnauthorizedError || (error as Error)?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.json(
       { message: "Payment failed", error: (error as Error).message },
       { status: 500 }

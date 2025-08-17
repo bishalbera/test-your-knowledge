@@ -1,11 +1,9 @@
-
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { prisma } from '@/utils/db'
 
 export async function POST(req: Request) {
-
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET
 
@@ -26,9 +24,8 @@ export async function POST(req: Request) {
     })
   }
 
-  // Get the body
-  const payload = await req.json()
-  const body = JSON.stringify(payload);
+  // Get the raw body for signature verification
+  const body = await req.text();
 
   // Create a new Svix instance with your secret.
   const wh = new Webhook(WEBHOOK_SECRET);
@@ -49,41 +46,43 @@ export async function POST(req: Request) {
     })
   }
 
-  // Get the ID and type
-  const { id } = evt.data;
+  // Safely parse after verification
+  const payload = JSON.parse(body);
+
   const eventType = evt.type;
+  const userId = payload?.data?.id as string | undefined;
+  const email = payload?.data?.email_addresses?.[0]?.email_address ?? null;
+  const first = payload?.data?.first_name ?? '';
+  const last = payload?.data?.last_name ?? '';
+  const imageUrl = payload?.data?.image_url ?? null;
+  const name = `${first} ${last}`.trim();
 
-  if(eventType === 'user.created') {
-    await prisma.user.create({
-        data: {
-            clerkId: payload.data.id,
-            email: payload.data.email_addresses[0].email_address,
-            name: payload.data.first_name + ' ' + payload.data.last_name,
-            imageUrl: payload.data.image_url,
-        }
-    })
+  try {
+    if (eventType === 'user.created') {
+      // Idempotent: if user exists, update; otherwise create
+      await prisma.user.upsert({
+        where: { clerkId: userId! },
+        update: { email: email ?? undefined, name, imageUrl: imageUrl ?? undefined },
+        create: { clerkId: userId!, email: email ?? '', name, imageUrl: imageUrl ?? undefined },
+      });
+    }
+
+    if (eventType === 'user.updated') {
+      await prisma.user.update({
+        where: { clerkId: userId! },
+        data: { email: email ?? undefined, name, imageUrl: imageUrl ?? undefined },
+      });
+    }
+
+    if (eventType === 'user.deleted') {
+      // Safe delete even if user might already be removed
+      await prisma.user.deleteMany({ where: { clerkId: userId } });
+    }
+  } catch (err) {
+    console.error('Error processing Clerk webhook event:', err);
+    // Still return 2xx so Clerk doesn't retry forever for non-retryable DB errors
+    return new Response('', { status: 200 });
   }
 
-  if(eventType === 'user.updated') {
-    await prisma.user.update({
-        where: {
-            clerkId: payload.data.id,
-        },
-        data: {
-            email: payload.data.email_addresses[0].email_address,
-            name: payload.data.first_name + ' ' + payload.data.last_name,
-            imageUrl: payload.data.image_url,
-        }
-    })
-  }
-
-  if(eventType === 'user.deleted') {
-    await prisma.user.delete({
-        where: {
-            clerkId: payload.data.id,
-        }
-    })
-  }
-
-  return new Response('', { status: 201 })
+  return new Response('', { status: 200 })
 }

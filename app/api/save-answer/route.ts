@@ -1,4 +1,4 @@
-import { getUserFromClerkID } from "@/utils/auth";
+import { getUserFromClerkID, UnauthorizedError } from "@/utils/auth";
 import { prisma } from "@/utils/db";
 import { NextRequest } from "next/server";
 
@@ -88,6 +88,9 @@ export const POST = async (req: NextRequest) => {
                 );
         } catch (error) {
                 console.error("Error saving answer:", error);
+                if (error instanceof UnauthorizedError || (error as Error)?.message === "UNAUTHORIZED") {
+                        return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });
+                }
                 return new Response(JSON.stringify({ error: "Failed to save answer" }), {
                         status: 500,
                 });

@@ -1,4 +1,4 @@
-import { getUserFromClerkID } from "@/utils/auth";
+import { getUserFromClerkID, UnauthorizedError } from "@/utils/auth";
 import { prisma } from "@/utils/db";
 import { getExam } from "@/utils/examUtils";
 import { NextRequest, NextResponse } from "next/server";
@@ -42,6 +42,9 @@ export const POST = async (req: NextRequest, props: { params: Promise<{ id: stri
     });
   } catch (error) {
     console.error("Error scheduling exam:", error);
+    if (error instanceof UnauthorizedError || (error as Error)?.message === "UNAUTHORIZED") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.json(
       { error: "Failed to schedule exam" },
       { status: 500 }
