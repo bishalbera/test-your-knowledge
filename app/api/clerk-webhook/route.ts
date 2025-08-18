@@ -25,7 +25,7 @@ const validateReqest = async (req: Request) => {
 };
 
 export const POST = async (req: Request) => {
-  const payload = await validateReqest(req);
+  const payload = await validateReqest(req.clone());
 
   if (
     payload.type === "user.created" ||
