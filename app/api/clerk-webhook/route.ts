@@ -92,5 +92,5 @@ export const POST = async (req: Request) => {
     return new Response("", { status: 200 });
   }
 
-  return new Response("", { status: 200 });
+  return  Response.json("", { status: 200 });
 };
