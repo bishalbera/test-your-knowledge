@@ -2,6 +2,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { UserJSON, WebhookEvent } from "@clerk/nextjs/server";
 import { prisma } from "@/utils/db";
+import { Prisma } from "@prisma/client";
 
 const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 if (!WEBHOOK_SECRET) {
@@ -74,6 +75,14 @@ export const POST = async (req: Request) => {
         console.log("User deleted successfully for clerkId:", userId);
       }
     } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if (e.code === "P2002") {
+          console.log(
+            "There is a unique constraint violation, a new user cannot be created with this email"
+          );
+        }
+        console.log(e.message);
+      }
       console.error("Error processing Clerk webhook event:", e);
       return new Response("", { status: 200 });
     }
