@@ -30,9 +30,17 @@ export const POST = async (req: Request) => {
   const userId = payload?.data?.id as string | undefined;
   // Only access email_addresses if present (user events)
   const email =
-    "email_addresses" in (payload.data as any)
-      ? (payload.data as any).email_addresses?.[0]?.email_address
+    Array.isArray((payload.data as any).email_addresses) &&
+    (payload.data as any).email_addresses.length > 0
+      ? (payload.data as any).email_addresses[0].email_address
       : undefined;
+
+  if (!email) {
+    console.error(
+      "No email found in Clerk webhook payload, skipping user upsert."
+    );
+    return new Response("No email in payload", { status: 200 });
+  }
 
   try {
     if (eventType === "user.created" && "first_name" in payload.data) {
