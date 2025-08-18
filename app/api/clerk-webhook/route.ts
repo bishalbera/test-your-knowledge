@@ -53,7 +53,7 @@ export const POST = async (req: Request) => {
         await prisma.user.upsert({
           where: { clerkId: userId },
           update: { email, name, imageUrl },
-          create: { clerkId: userId, email, name, imageUrl },
+          create: { clerkId: userId, email, name, imageUrl, exams: { create: [] } },
         });
       }
 
