@@ -50,22 +50,28 @@ export const POST = async (req: Request) => {
 
     try {
       if (payload.type === "user.created") {
+        console.log("Upserting user with clerkId:", userId);
         await prisma.user.upsert({
           where: { clerkId: userId },
           update: { email, name, imageUrl },
           create: { clerkId: userId, email, name, imageUrl, exams: { create: [] } },
         });
+        console.log("User upserted successfully for clerkId:", userId);
       }
 
       if (payload.type === "user.updated") {
+        console.log("Updating user with clerkId:", userId);
         await prisma.user.update({
           where: { clerkId: userId },
           data: { email, name, imageUrl },
         });
+        console.log("User updated successfully for clerkId:", userId);
       }
 
       if (payload.type === "user.deleted") {
+        console.log("Deleting user with clerkId:", userId);
         await prisma.user.deleteMany({ where: { clerkId: userId } });
+        console.log("User deleted successfully for clerkId:", userId);
       }
     } catch (e) {
       console.error("Error processing Clerk webhook event:", e);
