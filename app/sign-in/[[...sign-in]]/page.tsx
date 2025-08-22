@@ -6,7 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 export const dynamic = 'force-dynamic';
 
 const SignInPage = async () => {
-  const user = await auth();
+  // const user = await auth();
   
   // If user is already authenticated, redirect them to their profile
   if (user.userId) {
