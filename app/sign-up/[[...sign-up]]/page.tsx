@@ -13,8 +13,9 @@ const SignUpPage = async () => {
                 redirect(`/profile/${user.userId}`);
         }
         
-        // For non-authenticated users, show sign up and redirect to profile after signup
-        return <SignUp afterSignUpUrl="/profile" />;
+        // For non-authenticated users, show sign up
+        // Redirect is handled by NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL env var
+        return <SignUp />;
 };
 
 export default SignUpPage;

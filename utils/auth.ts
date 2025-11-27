@@ -39,3 +39,40 @@ export const isAdminUser = async () => {
   return false;
 };
 
+
+export const syncUser = async () => {
+  const user = await currentUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const email = user.emailAddresses[0]?.emailAddress;
+  const name = `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
+
+  if (!email) {
+    return null;
+  }
+
+  try {
+    const dbUser = await prisma.user.upsert({
+      where: { clerkId: user.id },
+      update: {
+        email,
+        name,
+        imageUrl: user.imageUrl,
+      },
+      create: {
+        clerkId: user.id,
+        email,
+        name,
+        imageUrl: user.imageUrl,
+        exams: { create: [] },
+      },
+    });
+    return dbUser;
+  } catch (error) {
+    console.error("Error syncing user:", error);
+    return null;
+  }
+};

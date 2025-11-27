@@ -13,7 +13,8 @@ const SignInPage = async () => {
     redirect(`/profile/${user.userId}`);
   }
   
-  // For non-authenticated users, show sign in and redirect to profile after signin
-  return <SignIn afterSignInUrl="/profile" />;
+  // For non-authenticated users, show sign in
+  // Redirect is handled by NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL env var
+  return <SignIn />;
 };
 export default SignInPage;

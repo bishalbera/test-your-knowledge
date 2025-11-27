@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers/Providers";
+import { AuthSync } from "@/components/AuthSync/AuthSync";
 
 export const metadata: Metadata = {
   title: "TYK",
@@ -30,7 +31,10 @@ export default function RootLayout({
           <div className="absolute -top-24 -left-24 h-72 w-72 rounded-full bg-gradient-to-br from-indigo-600/30 to-purple-600/20 blur-3xl" />
           <div className="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 blur-3xl" />
         </div>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AuthSync />
+          {children}
+        </Providers>
       </body>
     </html>
   );
