@@ -1,20 +1,31 @@
+"use client";
+
 import { SignIn } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { useEffect } from "react";
 
-// Force dynamic rendering for this page since we use auth()
-export const dynamic = 'force-dynamic';
+const SignInPage = () => {
+  const router = useRouter();
+  const { user, isLoaded } = useUser();
 
-const SignInPage = async () => {
-  const user = await auth();
-  
-  // If user is already authenticated, redirect them to their profile
-  if (user.userId) {
-    redirect(`/profile/${user.userId}`);
+  useEffect(() => {
+    if (isLoaded && user) {
+      router.push(`/profile/${user.id}`);
+    }
+  }, [isLoaded, user, router]);
+
+  if (!isLoaded) {
+    return null;
   }
-  
+
+  if (user) {
+    return null;
+  }
+
   // For non-authenticated users, show sign in
   // Redirect is handled by NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL env var
   return <SignIn />;
 };
+
 export default SignInPage;

@@ -44,7 +44,7 @@ const ProfilePage = () => {
     return <p className="text-center text-red-500">User not found.</p>;
   }
 
-  const isAdmin = user?.emailAddresses[0].emailAddress == process.env.ADMIN_EMAIL;
+  const isAdmin = user?.emailAddresses[0]?.emailAddress === process.env.NEXT_PUBLIC_ADMIN_EMAIL;
 
   return (
     <div className="min-h-screen w-screen text-white">

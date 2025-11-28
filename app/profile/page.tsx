@@ -1,19 +1,33 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+"use client";
 
-// Force dynamic rendering for this page since we use auth()
-export const dynamic = 'force-dynamic';
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-const ProfileRedirect = async () => {
-  const user = await auth();
-  
-  if (!user.userId) {
-    // If user is not authenticated, redirect to sign-in
-    redirect('/sign-in');
-  }
-  
-  // Redirect to the user's specific profile page
-  redirect(`/profile/${user.userId}`);
+const ProfileRedirect = () => {
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (isLoaded) {
+      if (!user) {
+        // If user is not authenticated, redirect to sign-in
+        router.push('/sign-in');
+      } else {
+        // Redirect to the user's specific profile page
+        router.push(`/profile/${user.id}`);
+      }
+    }
+  }, [isLoaded, user, router]);
+
+  // Show loading state while redirecting
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="text-center">
+        <p>Redirecting...</p>
+      </div>
+    </div>
+  );
 };
 
 export default ProfileRedirect;
